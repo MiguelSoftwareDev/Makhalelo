@@ -146,8 +146,7 @@ const i18n = (() => {
         });
     }
 
-    if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', init);
-    else init();
+    document.addEventListener('DOMContentLoaded', init);
 
     return { setLang, apply, t, getLang, init };
 })();
