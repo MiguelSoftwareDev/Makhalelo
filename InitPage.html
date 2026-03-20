@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="pt-mz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Makhalelo - Narrativas de Moçambique</title>
+    <link rel="stylesheet" href="FrontEndLogic/Styles/Base.min.css">
+    <link rel="stylesheet" href="FrontEndLogic/Styles/anims.min.css">
+    <style>
+        /* ── USER DROPDOWN ── */
+        .user-menu{position:relative;}
+        .user-btn{
+            display:flex;align-items:center;gap:9px;padding:7px 14px 7px 7px;
+            border:1.5px solid rgba(0,0,0,.1);border-radius:50px;cursor:pointer;
+            background:white;transition:all .2s;font-family:'Times New Roman',Times,serif;
+        }
+        .user-btn:hover{border-color:var(--c-green);box-shadow:0 2px 8px rgba(0,0,0,.08);}
+        .user-av{
+            width:28px;height:28px;border-radius:50%;background:var(--c-green);
+            display:flex;align-items:center;justify-content:center;
+            font-size:.72rem;font-weight:700;color:white;overflow:hidden;flex-shrink:0;
+        }
+        .user-av img{width:100%;height:100%;object-fit:cover;}
+        .user-name{font-size:.82rem;font-weight:700;color:var(--c-dark);max-width:100px;
+            overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+        .user-chevron{width:14px;height:14px;opacity:.4;transition:transform .2s;}
+        .user-menu.open .user-chevron{transform:rotate(180deg);}
+
+        .user-dropdown{
+            position:absolute;top:calc(100% + 8px);right:0;
+            background:white;border-radius:10px;box-shadow:0 8px 28px rgba(0,0,0,.12);
+            border:1px solid rgba(0,0,0,.07);min-width:190px;overflow:hidden;
+            display:none;z-index:200;
+        }
+        .user-menu.open .user-dropdown{display:block;}
+        .dd-header{padding:14px 16px;border-bottom:1px solid #f0f0f0;background:#fafaf8;}
+        .dd-name{font-weight:700;font-size:.88rem;color:var(--c-dark);}
+        .dd-email{font-size:.74rem;color:#999;margin-top:1px;}
+        .dd-item{
+            display:flex;align-items:center;gap:10px;padding:10px 16px;
+            font-size:.84rem;color:var(--c-dark);cursor:pointer;transition:.15s;
+            border:none;background:none;width:100%;text-align:left;font-family:'Times New Roman',Times,serif;
+        }
+        .dd-item:hover{background:#f5f9f6;color:var(--c-green);}
+        .dd-item.danger{color:#c62828;}
+        .dd-item.danger:hover{background:#fff5f5;color:#c62828;}
+        .dd-item svg{flex-shrink:0;opacity:.55;}
+        .dd-sep{height:1px;background:#f0f0f0;margin:4px 0;}
+    </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="landing-nav fade-in-down">
+    <a href="InitPage.html" class="logo">Makhalelo</a>
+    <div class="nav-group">
+        <div class="lang-switcher">
+            <button class="lang-btn" data-lang="pt">PT</button>
+            <button class="lang-btn" data-lang="en">EN</button>
+            <button class="lang-btn" data-lang="es">ES</button>
+            <button class="lang-btn" data-lang="fr">FR</button>
+        </div>
+        <a href="sobre.html" class="nav-link-text" data-i18n="nav_sobre">Sobre Nós</a>
+
+        <!-- NAV: botão entrar (visitante) -->
+        <a href="LogOrReg.html" class="nav-btn-outline" id="nav-entrar" data-i18n="nav_entrar">Entrar</a>
+
+        <!-- NAV: menu utilizador (logado) — oculto por padrão -->
+        <div class="user-menu hide" id="user-menu">
+            <button class="user-btn" onclick="toggleDD()" id="user-btn">
+                <div class="user-av" id="nav-av">
+                    <img id="nav-av-img" src="" alt="" style="display:none;">
+                    <span id="nav-av-initials"></span>
+                </div>
+                <span class="user-name" id="nav-username"></span>
+                <svg class="user-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+            </button>
+            <div class="user-dropdown" id="user-dropdown">
+                <div class="dd-header">
+                    <div class="dd-name" id="dd-fullname"></div>
+                    <div class="dd-email" id="dd-email"></div>
+                </div>
+                <button class="dd-item" onclick="window.location.href='perfil.html'">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+                    <span data-i18n="dd_perfil">Meu Perfil</span>
+                </button>
+                <button class="dd-item" onclick="window.location.href='perfil.html#novo'">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12l7-7 7 7"/></svg>
+                    <span data-i18n="dd_publicar">Publicar Artigo</span>
+                </button>
+                <div id="dd-admin-item" style="display:none;">
+                    <div class="dd-sep"></div>
+                    <button class="dd-item" onclick="window.location.href='panel.html'">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+                        <span data-i18n="nav_painel">Painel Admin</span>
+                    </button>
+                </div>
+                <div class="dd-sep"></div>
+                <button class="dd-item danger" onclick="doLogout()">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                    <span data-i18n="nav_sair">Sair</span>
+                </button>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<!-- HERO -->
+<div class="landing-container">
+    <header class="landing-header">
+        <h1 class="fade-in delay-1">
+            <span data-i18n="hero_h1a">Descortinando Moçambique:</span>
+            <br><span class="highlight-green" data-i18n="hero_h1b">Pensamento</span><span data-i18n="hero_h1c">, Cultura e Política.</span>
+        </h1>
+        <p class="fade-in delay-2" data-i18n="hero_p">Uma revista digital dedicada a narrativas autênticas e análise crítica, celebrando a voz moçambicana.</p>
+        <div class="cta-buttons fade-in delay-3">
+            <a href="LogOrReg.html" class="btn-big btn-primary" id="hero-cta" data-i18n="hero_btn1">Acessar Conteúdo</a>
+            <a href="#destaque"     class="btn-big btn-secondary" data-i18n="hero_btn2">Ler Destaques</a>
+        </div>
+        <div class="stats-bar fade-in delay-4">
+            <span data-i18n="hero_stat1">100+ Artigos</span>
+            <span class="stat-dot"></span>
+            <span data-i18n="hero_stat2">50+ Autores</span>
+            <span class="stat-dot"></span>
+            <span data-i18n="hero_stat3">+100 Contribuidores</span>
+        </div>
+    </header>
+</div>
+
+<!-- DESTAQUE -->
+<section id="destaque" class="featured-wrapper">
+    <h4 class="section-label fade-up" data-i18n="destaque_label">Artigo em Destaque</h4>
+    <div class="featured-split">
+        <div class="feat-img-col fade-up delay-1">
+            <img id="feat-img" src="FrontEndLogic/Assets/articles/revoltas.jpg" alt="Destaque"
+                 onerror="this.style.display='none';">
+            <span class="feat-caption" id="feat-caption"></span>
+        </div>
+        <div class="feat-txt-col fade-up delay-2">
+            <h2 class="feat-title" id="feat-title">SE AS REVOLTAS POPULARES PODEM DERRUBAR REGIMES: QUE LIÇÕES PARA MOÇAMBIQUE?</h2>
+            <p class="feat-excerpt" id="feat-excerpt">As revoltas populares têm sido um mecanismo histórico de mudança de regimes políticos...</p>
+            <div class="tags-row" id="feat-tags"></div>
+            <a href="Artigo.html?id=post_001" class="feat-link-big" id="feat-link">
+                <span data-i18n="destaque_ler">Ler artigo completo</span>
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- FILTRO TAGS -->
+<div class="tag-filter-section">
+    <div class="tag-filter-inner">
+        <div class="tag-filter-label" data-i18n="tags_titulo">Filtrar por tema</div>
+        <div class="tag-pills" id="tag-pills"></div>
+    </div>
+</div>
+
+<!-- LEIA TAMBÉM -->
+<section class="read-section">
+    <h2 class="section-heading-center reveal" data-i18n="leia_titulo">Leia Também</h2>
+    <div class="cards-grid" id="cards-grid"></div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+    <span class="footer-logo">Makhalelo</span>
+    <span data-i18n="footer_copy">© 2025 Makhalelo. Todos os direitos reservados.</span>
+    <div style="display:flex;gap:16px;">
+        <a href="sobre.html"    data-i18n="nav_sobre">Sobre Nós</a>
+        <a href="LogOrReg.html" data-i18n="nav_entrar">Entrar</a>
+    </div>
+</footer>
+
+<script src="security.js"></script>
+<script src="ACore.js"></script>
+<script src="Recordum.js"></script>
+<script src="i18n.js"></script>
+<script>
+
+/* ── POSTS EMBUTIDOS (fallback quando JSON não carrega) ── */
+const FALLBACK_POSTS = [
+  {
+    id:"post_001",
+    title:"SE AS REVOLTAS POPULARES PODEM DERRUBAR REGIMES: QUE LIÇÕES PARA MOÇAMBIQUE?",
+    excerpt:"As revoltas populares têm sido um mecanismo histórico de mudança de regimes políticos em diversas partes do mundo. Elas refletem um profundo descontentamento com o status quo.",
+    category:"politica", tags:["politica","sociedade"],
+    image:"FrontEndLogic/Assets/articles/revoltas.jpg", legenda:"Manifestantes em Maputo, Reuters",
+    autor:"Wiston Baessa", status:"published", featured:true,
+    criadoEm:"2025-01-15T10:00:00.000Z"
+  },
+  {
+    id:"post_002",
+    title:"Uma visão da prática da \"banalidade do mal\" em Moçambique no período de pós-eleições",
+    excerpt:"O conceito arendtiano de 'banalidade do mal' encontra ressonância inquietante no contexto moçambicano pós-eleitoral.",
+    category:"sociedade", tags:["sociedade","politica"],
+    image:"FrontEndLogic/Assets/articles/banalidade.jpg",
+    autor:"Rachide Cassimo Latifo", status:"published", featured:false,
+    criadoEm:"2025-01-20T10:00:00.000Z"
+  },
+  {
+    id:"post_003",
+    title:"Falar para ser entendido e não admirado",
+    excerpt:"A comunicação política e intelectual em Moçambique enfrenta um paradoxo: quanto mais erudita a linguagem, menos alcance popular.",
+    category:"cultura", tags:["cultura","sociedade"],
+    image:"FrontEndLogic/Assets/articles/falar.jpg",
+    autor:"Edson Abílio Luciano", status:"published", featured:false,
+    criadoEm:"2025-01-25T10:00:00.000Z"
+  }
+];
+
+let allPosts = [];
+
+/* ── DROPDOWN UTILIZADOR ── */
+function toggleDD(){
+    document.getElementById('user-menu').classList.toggle('open');
+}
+document.addEventListener('click', e => {
+    const m = document.getElementById('user-menu');
+    if(!m.contains(e.target)) m.classList.remove('open');
+});
+function doLogout(){
+    Auth.logout();
+    window.location.reload();
+}
+
+/* ── INIT ── */
+(function checkAuthImmediate(){
+    const s = Auth.getSessao();
+    if(!s) return;
+    document.getElementById('nav-entrar').classList.add('hide');
+    document.getElementById('user-menu').classList.remove('hide');
+    const initials = (s.username||s.name||'U').charAt(0).toUpperCase();
+    document.getElementById('nav-av-initials').textContent = initials;
+    if(s.photo){
+        const img = document.getElementById('nav-av-img');
+        img.src = s.photo; img.style.display='block';
+        document.getElementById('nav-av-initials').style.display='none';
+    }
+    document.getElementById('nav-username').textContent = '@'+(s.username||s.name.split(' ')[0]);
+    document.getElementById('dd-fullname').textContent  = s.name;
+    document.getElementById('dd-email').textContent     = s.email||('@'+(s.username||''));
+    const heroCta = document.getElementById('hero-cta');
+    heroCta.textContent = 'Publicar Artigo';
+    heroCta.href = 'perfil.html#novo';
+    heroCta.removeAttribute('data-i18n');
+    if(s.role==='ADM') document.getElementById('dd-admin-item').style.display='block';
+})();
+
+async function init() {
+    /* Carrega posts: JSON estático → localStorage → fallback embutido */
+    try {
+        const res = await fetch('FrontEndLogic/Render/posts.json?v='+Date.now());
+        if(res.ok){
+            const d = await res.json();
+            allPosts = d.posts || d;
+            if(d.tags) Recordum.setTags(d.tags);
+        }
+    } catch(_){}
+
+    const local = Recordum.listar();
+    if(local.length > 0) allPosts = local;
+    if(allPosts.length === 0) allPosts = FALLBACK_POSTS;
+
+    /* Auth already handled above synchronously */
+
+    renderTags();
+    renderFeatured();
+    renderCards('todos');
+
+    /* Scroll reveal */
+    const obs = new IntersectionObserver(entries => {
+        entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('visible'); });
+    }, { threshold:.1, rootMargin:'0px 0px -40px 0px' });
+    document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+
+    i18n.apply();
+}
+
+/* ── TAGS ── */
+function renderTags() {
+    const tags = Recordum.getTags();
+    const el   = document.getElementById('tag-pills');
+    let html = `<button class="tag-pill-filter active" data-tag="todos"
+        style="background:var(--c-dark);color:#fff;border-color:var(--c-dark);"
+        onclick="filtrarTag('todos',this)">${i18n.t('tag_todos')}</button>`;
+    tags.forEach(t => {
+        html += `<button class="tag-pill-filter" data-tag="${t.id}"
+            onclick="filtrarTag('${t.id}',this)"
+            onmouseover="if(!this.classList.contains('active')){this.style.background='${t.cor}';this.style.color='#fff';this.style.borderColor='${t.cor}';}"
+            onmouseout="if(!this.classList.contains('active')){this.style.background='';this.style.color='';this.style.borderColor='';}">
+            ${t.label}</button>`;
+    });
+    el.innerHTML = html;
+}
+
+function filtrarTag(tagId, btn) {
+    document.querySelectorAll('.tag-pill-filter').forEach(b => {
+        b.classList.remove('active');
+        b.style.background=b.style.color=b.style.borderColor='';
+    });
+    btn.classList.add('active');
+    if(tagId==='todos'){
+        btn.style.background='var(--c-dark)';btn.style.color='#fff';btn.style.borderColor='var(--c-dark)';
+    } else {
+        const tag=Recordum.getTags().find(t=>t.id===tagId);
+        if(tag){btn.style.background=tag.cor;btn.style.color='#fff';btn.style.borderColor=tag.cor;}
+    }
+    renderCards(tagId);
+}
+
+/* ── DESTAQUE ── */
+function renderFeatured() {
+    const featId = Recordum.getDestaque();
+    let post = featId ? allPosts.find(p=>p.id===featId) : null;
+    if(!post) post = allPosts.find(p=>p.featured && p.status==='published');
+    if(!post) post = allPosts.filter(p=>p.status==='published')[0];
+    if(!post) return;
+
+    document.getElementById('feat-title').textContent   = post.title;
+    document.getElementById('feat-excerpt').textContent = post.excerpt;
+    /* Garantir que o link aponta para o artigo correcto */
+    document.getElementById('feat-link').href = 'Artigo.html?id=' + encodeURIComponent(post.id);
+    if(post.image){ document.getElementById('feat-img').src = post.image; }
+    if(post.legenda){ document.getElementById('feat-caption').textContent = post.legenda; }
+
+    const allTags = Recordum.getTags();
+    document.getElementById('feat-tags').innerHTML = (post.tags||[]).map(tid => {
+        const t = allTags.find(x=>x.id===tid);
+        return `<span class="tag-pill">${t?t.label:tid}</span>`;
+    }).join('');
+}
+
+/* ── CARDS ── */
+function renderCards(tagFilter) {
+    const grid = document.getElementById('cards-grid');
+    const pub  = allPosts.filter(p => p.status==='published');
+    const list = tagFilter==='todos' ? pub : pub.filter(p=>(p.tags||[]).includes(tagFilter));
+    const allTags = Recordum.getTags();
+    const CC = {politica:'pol',sociedade:'soc',cultura:'cul',economia:'eco',historia:'his',entrevista:'ent'};
+
+    if(!list.length){
+        const tag = Recordum.getTags().find(t=>t.id===tagFilter);
+        grid.innerHTML = `<div class="no-results">
+            <strong>Nenhum artigo encontrado</strong>
+            ${tag?'Tag: <b>'+tag.label+'</b>':''}
+        </div>`;
+        return;
+    }
+
+    grid.innerHTML = list.map((p,i) => {
+        const cls = CC[p.category]||'pol';
+        const tag = allTags.find(t=>t.id===p.category);
+        /* Link directo — não depende de JS para navegar */
+        const href = 'Artigo.html?id=' + encodeURIComponent(p.id);
+        return `<a href="${href}" class="card-item reveal ${i<3?'delay-'+(i+1):''}">
+            <div class="card-img-box">
+                ${p.image
+                    ? `<img src="${p.image}" alt="${p.title}" loading="lazy"
+                           onerror="this.parentNode.innerHTML='<div class=card-img-placeholder>&#128240;</div>'">`
+                    : `<div class="card-img-placeholder">&#128240;</div>`}
+                <span class="card-badge ${cls}">${tag?tag.label:p.category||''}</span>
+            </div>
+            <div class="card-info">
+                <h3 class="card-title">${p.title}</h3>
+                <span class="card-link-sm" data-i18n="leia_previa">Ler prévia &rsaquo;</span>
+            </div>
+        </a>`;
+    }).join('');
+
+    const obs = new IntersectionObserver(entries => {
+        entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('visible'); });
+    }, {threshold:.1, rootMargin:'0px 0px -40px 0px'});
+    grid.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+    i18n.apply();
+}
+
+init();
+</script>
+</body>
+</html>

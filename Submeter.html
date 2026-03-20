@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="pt-mz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Submeter Artigo | Makhalelo</title>
+    <link rel="stylesheet" href="FrontEndLogic/Styles/Base.min.css">
+    <link rel="stylesheet" href="FrontEndLogic/Styles/anims.min.css">
+    <style>
+        :root{--fh:'Times New Roman',Times,serif;--fb:'Times New Roman',Times,serif;}
+        body{font-family:var(--fb);background:#F9F7F2;}
+
+        .sub-nav{
+            display:flex;justify-content:space-between;align-items:center;
+            padding:15px 5%;background:rgba(249,247,242,.96);backdrop-filter:blur(12px);
+            border-bottom:1px solid rgba(0,0,0,.07);position:sticky;top:0;z-index:100;
+        }
+        .logo{font-family:var(--fh);font-weight:700;font-size:1.3rem;color:#1A1A1A;}
+        .btn-back{display:flex;align-items:center;gap:6px;font-size:.82rem;font-weight:700;
+            color:#1A1A1A;opacity:.6;transition:.2s;}
+        .btn-back:hover{opacity:1;color:#015334;text-decoration:none;}
+
+        .sub-wrapper{max-width:740px;margin:0 auto;padding:48px 20px 80px;}
+        .sub-header{margin-bottom:36px;}
+        .sub-kicker{font-size:.68rem;font-weight:700;letter-spacing:3px;text-transform:uppercase;
+            color:#015334;margin-bottom:10px;}
+        .sub-h1{font-family:var(--fh);font-size:2rem;font-weight:700;line-height:1.2;
+            margin-bottom:12px;color:#1A1A1A;}
+        .sub-desc{font-size:.92rem;color:#666;line-height:1.75;}
+
+        /* Aviso de login */
+        .login-gate{
+            background:#fff;border-radius:10px;padding:40px;text-align:center;
+            border:1.5px solid #e5e7eb;box-shadow:0 4px 16px rgba(0,0,0,.06);
+        }
+        .login-gate h3{font-family:var(--fh);font-size:1.3rem;font-weight:700;margin-bottom:10px;}
+        .login-gate p{color:#666;font-size:.9rem;margin-bottom:24px;line-height:1.65;}
+
+        /* Form */
+        .sub-form{background:#fff;border-radius:10px;padding:32px;
+            border:1.5px solid #e5e7eb;box-shadow:0 4px 16px rgba(0,0,0,.06);}
+        .fl{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.8px;
+            color:#444;margin-bottom:5px;margin-top:18px;display:block;}
+        .fl:first-child{margin-top:0;}
+        .fi{width:100%;padding:10px 13px;border:1.5px solid #e5e7eb;border-radius:7px;
+            font-size:.9rem;background:#fafafa;transition:.2s;font-family:var(--fb);color:#1A1A1A;}
+        .fi:focus{border-color:#015334;background:#fff;box-shadow:0 0 0 3px rgba(1,83,52,.07);outline:none;}
+        .fsel{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%23999' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 11px center;padding-right:30px;cursor:pointer;}
+        .fta{min-height:90px;resize:vertical;line-height:1.65;}
+        .frow{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+
+        /* Toolbar */
+        .tb{display:flex;gap:3px;flex-wrap:wrap;padding:6px 8px;background:#f8f8f8;
+            border:1.5px solid #e5e7eb;border-bottom:none;border-radius:6px 6px 0 0;}
+        .tbb{padding:4px 9px;background:#fff;border:1px solid #e0e0e0;border-radius:4px;
+            font-size:.75rem;font-weight:700;cursor:pointer;transition:.15s;color:#444;font-family:var(--fb);}
+        .tbb:hover{background:#015334;color:white;border-color:#015334;}
+        .rea{border:1.5px solid #e5e7eb;border-radius:0 0 7px 7px;min-height:300px;padding:14px;
+            font-size:.92rem;font-family:var(--fh);line-height:1.85;background:#fff;}
+        .rea:focus{border-color:#015334;outline:none;}
+        .rea p{margin-bottom:1em;}
+        .rea h2{margin:1.5em 0 .5em;font-size:1.2rem;}
+        .rea blockquote{border-left:4px solid #015334;padding:10px 16px;background:#f9f9f7;margin:1em 0;font-style:italic;}
+
+        /* Upload imagem */
+        .idrop{border:1.5px dashed #d1d5db;border-radius:8px;padding:26px;text-align:center;
+            cursor:pointer;transition:.2s;background:#fafafa;margin-top:5px;}
+        .idrop:hover{border-color:#015334;background:#f0faf5;}
+        .idrop-t{font-weight:700;font-size:.84rem;color:#1A1A1A;margin-top:6px;}
+        .idrop-s{font-size:.72rem;color:#aaa;margin-top:2px;}
+        .cprev{max-height:150px;border-radius:6px;margin:0 auto;display:none;}
+
+        /* Directrizes editoriais */
+        .guidelines{background:#f0faf5;border-radius:8px;padding:18px 20px;
+            margin-bottom:26px;border-left:3px solid #015334;}
+        .guidelines h4{font-family:var(--fh);font-size:.9rem;font-weight:700;
+            color:#015334;margin-bottom:10px;}
+        .guidelines ul{list-style:none;display:flex;flex-direction:column;gap:6px;}
+        .guidelines li{font-size:.8rem;color:#444;display:flex;align-items:flex-start;gap:8px;line-height:1.5;}
+        .guidelines li::before{content:'→';color:#015334;flex-shrink:0;margin-top:.1em;}
+
+        /* Botão */
+        .btn-submit{width:100%;padding:14px;background:#015334;color:white;border:none;
+            border-radius:50px;font-weight:700;font-size:.95rem;cursor:pointer;transition:.2s;
+            display:flex;align-items:center;justify-content:center;gap:8px;font-family:var(--fb);margin-top:22px;}
+        .btn-submit:hover{background:#013f28;transform:translateY(-1px);}
+        .btn-submit:disabled{opacity:.6;cursor:not-allowed;transform:none;}
+        .sp{width:16px;height:16px;border:2px solid rgba(255,255,255,.4);border-top-color:#fff;
+            border-radius:50%;animation:spin .7s linear infinite;display:none;}
+        .btn-submit.loading .sp{display:block;}
+        .btn-submit.loading span:first-child{display:none;}
+
+        .msg-ok{display:none;background:#e8f5e9;border:1.5px solid #4caf50;border-radius:8px;
+            padding:16px 18px;color:#1b5e20;font-size:.88rem;line-height:1.65;margin-bottom:18px;}
+        .msg-ok.show{display:block;}
+        .msg-err{display:none;background:#ffebee;border:1.5px solid #ef9a9a;border-radius:8px;
+            padding:16px 18px;color:#b71c1c;font-size:.88rem;margin-bottom:18px;}
+        .msg-err.show{display:block;}
+
+        @keyframes spin{to{transform:rotate(360deg);}}
+        @media(max-width:600px){.frow{grid-template-columns:1fr;}}
+    </style>
+</head>
+<body>
+
+<nav class="sub-nav">
+    <a href="InitPage.html" class="logo">Makhalelo</a>
+    <a href="InitPage.html" class="btn-back">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg>
+        Voltar
+    </a>
+</nav>
+
+<div class="sub-wrapper">
+    <div class="sub-header">
+        <div class="sub-kicker">Contribuição</div>
+        <h1 class="sub-h1">Submeter um Artigo</h1>
+        <p class="sub-desc">A sua análise será revista pela equipa editorial antes de ser publicada. O processo demora normalmente entre 3 a 7 dias úteis.</p>
+    </div>
+
+    <!-- Estado: não logado -->
+    <div id="login-gate" class="login-gate" style="display:none;">
+        <h3>Acesso necessário</h3>
+        <p>Para submeter um artigo precisa de ter uma conta activa na Makhalelo.<br>O registo é gratuito e leva menos de um minuto.</p>
+        <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
+            <a href="LogOrReg.html?from=submeter.html" style="background:#015334;color:white;padding:11px 22px;border-radius:50px;font-weight:700;font-size:.86rem;">Entrar / Criar conta</a>
+            <a href="InitPage.html" style="border:1.5px solid #e5e7eb;color:#444;padding:11px 22px;border-radius:50px;font-weight:700;font-size:.86rem;">Ver artigos</a>
+        </div>
+    </div>
+
+    <!-- Estado: logado -->
+    <div id="sub-content" style="display:none;">
+
+        <div class="guidelines">
+            <h4>Directrizes editoriais</h4>
+            <ul>
+                <li>O artigo deve ter entre 600 e 4000 palavras.</li>
+                <li>Forneça fontes para factos e dados específicos.</li>
+                <li>Evite linguagem ofensiva ou discurso de ódio.</li>
+                <li>O conteúdo deve ser original e não publicado noutros meios.</li>
+                <li>A equipa pode editar o texto para adequação ao estilo editorial.</li>
+            </ul>
+        </div>
+
+        <div id="msg-ok" class="msg-ok"></div>
+        <div id="msg-err" class="msg-err"></div>
+
+        <form class="sub-form" onsubmit="submeter(event)" novalidate>
+
+            <label class="fl">Título *</label>
+            <input type="text" id="s-title" class="fi" placeholder="Título do artigo..." maxlength="200" required>
+
+            <div class="frow" style="margin-top:4px;">
+                <div>
+                    <label class="fl">Categoria *</label>
+                    <select id="s-cat" class="fi fsel" required>
+                        <option value="">Selecionar...</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="fl">Tags (IDs por vírgula)</label>
+                    <input type="text" id="s-tags" class="fi" placeholder="politica, cultura">
+                </div>
+            </div>
+
+            <label class="fl">Imagem de Capa</label>
+            <div class="idrop" onclick="document.getElementById('s-img').click()">
+                <div id="idtxt">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#ccc" stroke-width="1.5" style="margin:0 auto 6px;display:block;"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                    <div class="idrop-t">Clique para selecionar uma imagem</div>
+                    <div class="idrop-s">JPG, PNG — máx. 2MB</div>
+                </div>
+                <img id="cprev" class="cprev" alt="Capa">
+            </div>
+            <input type="file" id="s-img" accept="image/jpeg,image/png,image/webp" style="display:none;" onchange="prevCapa(this)">
+
+            <label class="fl">Legenda da Imagem</label>
+            <input type="text" id="s-legenda" class="fi" placeholder="Créditos fotográficos ou descrição..." maxlength="200">
+
+            <label class="fl">Resumo * <span style="font-size:.68rem;color:#999;text-transform:none;letter-spacing:0;">(2 a 3 frases que resumem o artigo)</span></label>
+            <textarea id="s-excerpt" class="fi fta" placeholder="Escreva um resumo atrativo do seu artigo..." maxlength="500" required></textarea>
+
+            <label class="fl">Conteúdo * <span style="font-size:.68rem;color:#999;text-transform:none;letter-spacing:0;" id="word-count"></span></label>
+            <div class="tb">
+                <button type="button" class="tbb" onclick="fmt('bold')"><b>B</b></button>
+                <button type="button" class="tbb" onclick="fmt('italic')"><i>I</i></button>
+                <button type="button" class="tbb" onclick="fmt('underline')"><u>U</u></button>
+                <button type="button" class="tbb" onclick="fmt('formatBlock','h2')">H2</button>
+                <button type="button" class="tbb" onclick="fmt('formatBlock','h3')">H3</button>
+                <button type="button" class="tbb" onclick="fmt('formatBlock','blockquote')">Cit.</button>
+                <button type="button" class="tbb" onclick="fmt('insertUnorderedList')">Lista</button>
+                <button type="button" class="tbb" onclick="lnk()">Link</button>
+                <button type="button" class="tbb" onclick="fmt('removeFormat')">Limpar</button>
+            </div>
+            <div id="s-content" class="rea" contenteditable="true"
+                 oninput="updateWordCount()"></div>
+
+            <label class="fl">Nota para o editor <span style="font-size:.68rem;color:#999;text-transform:none;letter-spacing:0;">(opcional — contexto ou pedidos especiais)</span></label>
+            <textarea id="s-nota" class="fi fta" placeholder="Escreva uma nota para a equipa editorial (opcional)..." maxlength="300" style="min-height:60px;"></textarea>
+
+            <button type="submit" class="btn-submit" id="btn-sub">
+                <span>Submeter para revisão</span>
+                <span class="sp"></span>
+            </button>
+        </form>
+    </div>
+</div>
+
+<script src="security.js"></script>
+<script src="ACore.js"></script>
+<script src="Recordum.js"></script>
+<script src="i18n.js"></script>
+<script>
+/* ── VERIFICAR LOGIN ── */
+const _s = Auth.getSessao();
+if(!_s){
+    document.getElementById('login-gate').style.display='block';
+} else {
+    document.getElementById('sub-content').style.display='block';
+    popularCat();
+}
+
+function popularCat(){
+    const sel=document.getElementById('s-cat');
+    Recordum.getTags().forEach(t=>{
+        const o=document.createElement('option'); o.value=t.id; o.textContent=t.label; sel.appendChild(o);
+    });
+}
+
+/* ── EDITOR ── */
+function fmt(cmd,v){ document.getElementById('s-content').focus(); v?document.execCommand(cmd,false,v):document.execCommand(cmd,false,null); }
+function lnk(){ const u=prompt('URL:'); if(u) fmt('createLink',u); }
+function prevCapa(inp){
+    if(!inp.files||!inp.files[0]) return;
+    if(inp.files[0].size>2*1024*1024){ alert('Imagem demasiado grande (máx. 2MB)'); inp.value=''; return; }
+    const r=new FileReader();
+    r.onload=e=>{ document.getElementById('cprev').src=e.target.result; document.getElementById('cprev').style.display='block'; document.getElementById('idtxt').style.display='none'; };
+    r.readAsDataURL(inp.files[0]);
+}
+function updateWordCount(){
+    const txt = document.getElementById('s-content').innerText||'';
+    const n   = txt.trim().split(/\s+/).filter(w=>w.length>0).length;
+    const el  = document.getElementById('word-count');
+    el.textContent = n + ' palavras';
+    el.style.color = n < 600 ? '#e65100' : n > 4000 ? '#c62828' : '#2e7d32';
+}
+
+/* ── SUBMISSÃO ── */
+async function submeter(e){
+    e.preventDefault();
+    if(!_s){ alert('Sessão expirada. Faça login novamente.'); return; }
+
+    const title   = document.getElementById('s-title').value.trim();
+    const cat     = document.getElementById('s-cat').value;
+    const tags    = document.getElementById('s-tags').value.split(',').map(t=>t.trim()).filter(Boolean);
+    const excerpt = document.getElementById('s-excerpt').value.trim();
+    const content = document.getElementById('s-content').innerHTML.trim();
+    const legenda = document.getElementById('s-legenda').value.trim();
+    const nota    = document.getElementById('s-nota').value.trim();
+    const cprev   = document.getElementById('cprev');
+    const image   = (cprev.style.display!=='none'&&cprev.src.startsWith('data:')) ? cprev.src : null;
+
+    const msgErr = document.getElementById('msg-err');
+    const msgOk  = document.getElementById('msg-ok');
+    msgErr.classList.remove('show'); msgOk.classList.remove('show');
+
+    if(!title)    { msgErr.textContent='O título é obrigatório.'; msgErr.classList.add('show'); return; }
+    if(!cat)      { msgErr.textContent='Selecione uma categoria.'; msgErr.classList.add('show'); return; }
+    if(!excerpt)  { msgErr.textContent='O resumo é obrigatório.'; msgErr.classList.add('show'); return; }
+    if(!content||content==='<br>'){ msgErr.textContent='O conteúdo está vazio.'; msgErr.classList.add('show'); return; }
+    const wc = (document.getElementById('s-content').innerText||'').trim().split(/\s+/).filter(w=>w.length>0).length;
+    if(wc < 100)  { msgErr.textContent='O artigo deve ter pelo menos 100 palavras.'; msgErr.classList.add('show'); return; }
+
+    /* Guardar na fila de pendentes */
+    const btn = document.getElementById('btn-sub');
+    btn.classList.add('loading'); btn.disabled=true;
+
+    try {
+        const pending = JSON.parse(localStorage.getItem('mk_pending')||'[]');
+        const uid = () => Date.now().toString(36)+Math.random().toString(36).substr(2,5);
+        pending.push({
+            id: 'pend_'+uid(),
+            title, category:cat, tags, excerpt, content, legenda, nota,
+            image,
+            autor:    _s.name,
+            autorId:  _s.id,
+            autorEmail: _s.email,
+            status:   'pending',
+            criadoEm: new Date().toISOString()
+        });
+        localStorage.setItem('mk_pending', JSON.stringify(pending));
+
+        msgOk.innerHTML = '<strong>Artigo submetido com sucesso!</strong><br>A equipa editorial irá rever o seu artigo e responder em até 7 dias úteis. Obrigado pela sua contribuição.';
+        msgOk.classList.add('show');
+        msgOk.scrollIntoView({behavior:'smooth'});
+
+        /* Limpa form */
+        document.getElementById('s-title').value='';
+        document.getElementById('s-cat').value='';
+        document.getElementById('s-tags').value='';
+        document.getElementById('s-excerpt').value='';
+        document.getElementById('s-content').innerHTML='';
+        document.getElementById('s-legenda').value='';
+        document.getElementById('s-nota').value='';
+        document.getElementById('cprev').style.display='none';
+        document.getElementById('idtxt').style.display='block';
+        document.getElementById('word-count').textContent='';
+
+    } catch(err){
+        msgErr.textContent='Erro ao submeter. Tente novamente.';
+        msgErr.classList.add('show');
+    } finally {
+        btn.classList.remove('loading'); btn.disabled=false;
+    }
+}
+</script>
+</body>
+</html>

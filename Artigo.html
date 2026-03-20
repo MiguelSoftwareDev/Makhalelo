@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="pt-mz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Artigo | Makhalelo</title>
+    <link rel="stylesheet" href="FrontEndLogic/Styles/Base.min.css">
+    <style>
+        :root{
+            --bg:#F9F7F2;--green:#015334;--dark:#1A1A1A;--gray:#6b7280;
+            --gold:#c9a84c;--border:#e5e7eb;
+            --fh:'Times New Roman',Times,serif;--fb:'Times New Roman',Times,serif;
+            --max-w:700px;
+        }
+        *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;text-decoration:none;}
+        body{background:var(--bg);color:var(--dark);font-family:var(--fb);line-height:1.6;}
+
+        #progress-bar{position:fixed;top:0;left:0;height:3px;width:0%;
+            background:linear-gradient(90deg,var(--green),var(--gold));z-index:9999;transition:width .1s linear;}
+
+        .art-nav{position:sticky;top:0;z-index:100;background:rgba(249,247,242,.96);
+            backdrop-filter:blur(12px);border-bottom:1px solid rgba(0,0,0,.08);
+            padding:14px 5%;display:flex;justify-content:space-between;align-items:center;gap:16px;}
+        .art-nav .logo{font-family:var(--fh);font-weight:700;font-size:1.3rem;color:var(--dark);}
+        .art-nav-right{display:flex;align-items:center;gap:16px;}
+        .btn-back{display:flex;align-items:center;gap:6px;font-size:.82rem;font-weight:700;
+            color:var(--dark);opacity:.6;transition:.2s;}
+        .btn-back:hover{opacity:1;color:var(--green);text-decoration:none;}
+        .btn-back svg{transition:transform .2s;}
+        .btn-back:hover svg{transform:translateX(-3px);}
+
+        .lang-switcher{display:flex;gap:2px;background:white;border:1.5px solid rgba(0,0,0,.1);border-radius:50px;padding:3px;}
+        .lang-btn{padding:4px 9px;border-radius:50px;font-size:.66rem;font-weight:700;letter-spacing:.5px;
+            color:#666;background:none;border:none;cursor:pointer;transition:.2s;}
+        .lang-btn:hover{color:var(--green);}
+        .lang-btn.active{background:var(--green);color:#fff;}
+
+        .art-hero{width:100%;background:var(--dark);position:relative;overflow:hidden;}
+        .art-hero-img{width:100%;height:480px;object-fit:cover;display:block;opacity:.55;}
+        .art-hero-placeholder{width:100%;height:320px;
+            background:linear-gradient(135deg,#1a2a1a,var(--dark));}
+        .art-hero-overlay{position:absolute;inset:0;
+            background:linear-gradient(to top,rgba(0,0,0,.78) 0%,rgba(0,0,0,.2) 55%,transparent 100%);}
+        .art-hero-content{position:absolute;bottom:0;left:0;right:0;
+            padding:36px 5%;max-width:calc(var(--max-w) + 10%);margin:0 auto;}
+        .art-category{display:inline-block;padding:4px 11px;border-radius:4px;
+            font-size:.66rem;font-weight:800;text-transform:uppercase;letter-spacing:.8px;
+            color:#fff;margin-bottom:14px;}
+        .art-hero-title{font-family:var(--fh);font-size:clamp(1.6rem,4vw,2.6rem);
+            font-weight:700;line-height:1.18;color:#fff;
+            text-shadow:0 2px 20px rgba(0,0,0,.5);max-width:var(--max-w);}
+
+        .art-wrap{max-width:var(--max-w);margin:0 auto;padding:0 20px;}
+
+        .art-meta{display:flex;align-items:center;gap:20px;flex-wrap:wrap;
+            padding:22px 0;border-bottom:1px solid var(--border);margin-bottom:36px;}
+        .art-autor-card{display:flex;align-items:center;gap:11px;}
+        .art-autor-av{width:44px;height:44px;border-radius:50%;background:var(--green);
+            display:flex;align-items:center;justify-content:center;font-family:var(--fh);
+            font-weight:700;font-size:1rem;color:white;flex-shrink:0;overflow:hidden;border:2px solid #e0e0e0;}
+        .art-autor-av img{width:100%;height:100%;object-fit:cover;}
+        .art-autor-name{font-weight:700;font-size:.9rem;color:var(--dark);}
+        .art-autor-role{font-size:.74rem;color:var(--gray);margin-top:1px;}
+        .art-read-time{display:flex;align-items:center;gap:5px;font-size:.78rem;color:var(--gray);}
+        .art-tags-meta{display:flex;gap:6px;flex-wrap:wrap;margin-left:auto;}
+        .art-tag{padding:3px 10px;border-radius:50px;font-size:.66rem;font-weight:700;
+            color:#fff;cursor:pointer;transition:.2s;}
+        .art-tag:hover{opacity:.8;transform:translateY(-1px);}
+
+        /* CORPO */
+        .art-body{font-family:var(--fh);font-size:1.08rem;line-height:1.92;
+            color:#2d2d2d;margin-bottom:48px;}
+        .art-body p{margin-bottom:1.5em;}
+        .art-body h2{font-family:var(--fh);font-size:1.35rem;font-weight:700;
+            margin:2.2em 0 .7em;color:var(--dark);padding-left:16px;border-left:4px solid var(--green);}
+        .art-body h3{font-family:var(--fh);font-size:1.1rem;font-weight:700;
+            margin:1.8em 0 .5em;color:var(--dark);}
+        .art-body blockquote{border-left:4px solid var(--green);padding:14px 22px;
+            background:rgba(1,83,52,.05);border-radius:0 8px 8px 0;
+            margin:1.8em 0;font-style:italic;color:#444;font-size:1.05rem;line-height:1.75;}
+        .art-body ul,.art-body ol{margin:0 0 1.5em 1.5em;}
+        .art-body li{margin-bottom:.4em;}
+        .art-body a{color:var(--green);text-decoration:underline;text-underline-offset:3px;}
+        .art-body strong{font-weight:700;}
+
+        .art-img-caption{font-size:.75rem;color:var(--gray);font-style:italic;
+            text-align:center;margin-top:-16px;margin-bottom:32px;}
+
+        .art-author-bio{background:white;border-radius:12px;padding:28px;
+            border:1px solid var(--border);margin-bottom:40px;display:flex;gap:20px;align-items:flex-start;}
+        .bio-av{width:72px;height:72px;border-radius:50%;flex-shrink:0;overflow:hidden;
+            border:2px solid var(--border);background:var(--green);display:flex;
+            align-items:center;justify-content:center;font-family:var(--fh);font-weight:700;font-size:1.4rem;color:white;}
+        .bio-av img{width:100%;height:100%;object-fit:cover;}
+        .bio-label{font-size:.66rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--gray);margin-bottom:4px;}
+        .bio-name{font-family:var(--fh);font-size:1.05rem;font-weight:700;margin-bottom:6px;}
+        .bio-cred{font-size:.78rem;color:var(--green);font-weight:600;margin-bottom:10px;}
+        .bio-text{font-size:.84rem;color:var(--gray);line-height:1.72;}
+
+        .art-share{display:flex;align-items:center;gap:12px;flex-wrap:wrap;
+            padding:24px 0;border-top:1px solid var(--border);border-bottom:1px solid var(--border);margin-bottom:52px;}
+        .share-label{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--gray);}
+        .share-btn{padding:7px 16px;border-radius:50px;font-size:.78rem;font-weight:700;
+            cursor:pointer;border:1.5px solid var(--border);background:white;color:var(--dark);
+            transition:.2s;font-family:var(--fb);}
+        .share-btn:hover{border-color:var(--green);color:var(--green);}
+
+        .related{background:white;padding:52px 5%;}
+        .related-inner{max-width:1060px;margin:0 auto;}
+        .related-h{font-family:var(--fh);font-size:1.3rem;font-weight:700;margin-bottom:28px;
+            padding-bottom:14px;border-bottom:2px solid var(--border);}
+        .related-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;}
+        .rel-card{background:var(--bg);border-radius:10px;overflow:hidden;cursor:pointer;
+            transition:.25s;border:1px solid var(--border);display:flex;flex-direction:column;}
+        .rel-card:hover{transform:translateY(-5px);box-shadow:0 12px 28px rgba(0,0,0,.1);}
+        .rel-img{height:150px;overflow:hidden;position:relative;background:#e8f5e9;}
+        .rel-img img{width:100%;height:100%;object-fit:cover;transition:transform .4s;}
+        .rel-card:hover .rel-img img{transform:scale(1.04);}
+        .rel-badge{position:absolute;top:10px;left:10px;padding:3px 9px;border-radius:3px;
+            font-size:.62rem;font-weight:800;text-transform:uppercase;color:#fff;}
+        .rel-info{padding:16px;flex:1;display:flex;flex-direction:column;justify-content:space-between;}
+        .rel-title{font-family:var(--fh);font-size:.88rem;font-weight:700;line-height:1.5;margin-bottom:12px;color:var(--dark);}
+        .rel-link{font-size:.74rem;font-weight:700;color:var(--green);text-transform:uppercase;letter-spacing:.5px;}
+
+        footer{background:var(--dark);color:rgba(255,255,255,.45);padding:24px 5%;
+            display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;font-size:.82rem;}
+        .footer-logo{font-family:var(--fh);color:rgba(255,255,255,.88);font-weight:700;font-size:1rem;}
+        footer a{color:rgba(255,255,255,.4);transition:.2s;}
+        footer a:hover{color:var(--gold);}
+
+        .not-found{text-align:center;padding:100px 20px;}
+        .not-found h2{font-family:var(--fh);font-size:1.8rem;margin-bottom:12px;}
+        .not-found p{color:var(--gray);margin-bottom:24px;}
+        .btn-primary{background:var(--green);color:white;padding:12px 26px;border-radius:50px;
+            font-weight:700;font-size:.88rem;display:inline-block;transition:.2s;}
+        .btn-primary:hover{background:#013f28;text-decoration:none;}
+
+        @media(max-width:720px){
+            .art-hero-img{height:260px;}
+            .art-meta{flex-direction:column;align-items:flex-start;gap:12px;}
+            .art-tags-meta{margin-left:0;}
+            .related-grid{grid-template-columns:1fr;}
+            .art-author-bio{flex-direction:column;gap:14px;}
+        }
+    </style>
+</head>
+<body>
+
+<div id="progress-bar"></div>
+
+<nav class="art-nav">
+    <a href="InitPage.html" class="logo">Makhalelo</a>
+    <div class="art-nav-right">
+        <div class="lang-switcher">
+            <button class="lang-btn" data-lang="pt">PT</button>
+            <button class="lang-btn" data-lang="en">EN</button>
+            <button class="lang-btn" data-lang="es">ES</button>
+            <button class="lang-btn" data-lang="fr">FR</button>
+        </div>
+        <a href="InitPage.html" class="btn-back">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg>
+            Voltar
+        </a>
+    </div>
+</nav>
+
+<div id="art-container">
+    <div style="text-align:center;padding:120px 20px;color:var(--gray);font-family:var(--fb);">
+        A carregar artigo...
+    </div>
+</div>
+
+<section class="related" id="related-section" style="display:none;">
+    <div class="related-inner">
+        <h2 class="related-h">Artigos Relacionados</h2>
+        <div class="related-grid" id="related-grid"></div>
+    </div>
+</section>
+
+<footer>
+    <span class="footer-logo">Makhalelo</span>
+    <span>© 2025 Makhalelo. Todos os direitos reservados.</span>
+    <div style="display:flex;gap:16px;">
+        <a href="sobre.html">Sobre Nós</a>
+        <a href="LogOrReg.html">Entrar</a>
+    </div>
+</footer>
+
+<!-- Scripts — ACore e Recordum primeiro, i18n por último -->
+<script src="ACore.js"></script>
+<script src="Recordum.js"></script>
+<script src="i18n.js"></script>
+<script>
+
+/* ── SANITIZADOR DEFENSIVO ── funciona mesmo sem security.js carregado */
+const _esc = (str) => {
+    if(typeof str !== 'string') return String(str||'');
+    return str
+        .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+        .replace(/"/g,'&quot;').replace(/'/g,'&#x27;');
+};
+
+/* ── FALLBACK: posts embutidos ── usados quando fetch e localStorage falham */
+const POSTS_FALLBACK = [
+  {
+    id:"post_001",
+    title:"SE AS REVOLTAS POPULARES PODEM DERRUBAR REGIMES: QUE LIÇÕES PARA MOÇAMBIQUE?",
+    excerpt:"As revoltas populares têm sido um mecanismo histórico de mudança de regimes políticos em diversas partes do mundo.",
+    content:`<p>As revoltas populares têm sido um mecanismo histórico de mudança de regimes políticos em diversas partes do mundo. Elas refletem um profundo descontentamento com o status quo, frequentemente alimentado por desigualdades sociais, corrupção, repressão e crises económicas. A pergunta crucial é: as revoltas populares podem derrubar o regime da FRELIMO, partido que governa Moçambique há mais de 40 anos?</p><p>A resposta a essa pergunta exige uma análise do contexto actual do país, das lições extraídas de grandes revoltas históricas e das possíveis dinâmicas que poderiam levar a uma mudança de regime em Moçambique.</p><h2>O Contexto Actual de Moçambique</h2><p>A turbulência política e social em Moçambique nos últimos tempos, especialmente após as eleições presidenciais e parlamentares de 2024, levanta questões sobre a legitimidade do regime da FRELIMO. Os resultados eleitorais foram amplamente contestados, com alegações de fraude e manipulação, e os protestos subsequentes têm sido mais intensos e generalizados do que em ocasiões anteriores.</p><p>A participação popular é notável, incluindo desde as classes mais altas até os bairros de Maputo, que têm demonstrado a sua insatisfação por meio de manifestações como o panelaço e a paralisação de actividades económicas convocada pela oposição. Esses protestos refletem um descontentamento generalizado com a falta de mobilidade social, a desigualdade crescente e as crises económicas estruturais.</p><p>A questão do <em>regime change</em> em Moçambique não é nova. O país enfrenta desafios profundos, como a crise das &ldquo;dívidas ocultas&rdquo; que estourou em 2014, a crescente pobreza, as desigualdades regionais, e a captura do Estado por uma elite política corrupta.</p><h2>Lições de Revoltas Populares e Mudança de Regime</h2><p>A história oferece várias lições sobre como revoltas populares podem levar à mudança de regime.</p><p><strong>1. Revolução Francesa (1789):</strong> A Revolução Francesa foi impulsionada por um profundo descontentamento com a monarquia absolutista, a desigualdade social e os altos impostos. A mobilização popular, aliada à desorganização da elite governante, resultou na queda da monarquia e na criação da Primeira República Francesa.</p><p><strong>2. Revolução Russa (1917):</strong> A Revolução Russa de 1917 foi marcada por um movimento popular que se aproveitou das divisões internas da elite governante, das condições de vida extremamente precárias da população e da insatisfação com a participação russa na Primeira Guerra Mundial.</p><p><strong>3. Primavera Árabe (2010–2012):</strong> O movimento da Primavera Árabe demonstrou como a mobilização popular, especialmente por meio das redes sociais, pode desafiar regimes autocráticos estabelecidos. Em países como Tunísia e Egito, a pressão popular foi suficiente para forçar a renúncia de líderes que estavam no poder há décadas.</p><blockquote>Esses exemplos têm elementos comuns: o aumento da mobilização popular, a fragmentação ou falta de coesão da elite governante e a perda de apoio internacional para os regimes em questão.</blockquote><h2>Possíveis Cenários para a Mudança de Regime</h2><p><strong>Fragmentação Interna:</strong> A FRELIMO, embora tenha uma estrutura sólida, tem enfrentado crescentes divisões internas. A instabilidade política e as tensões dentro do partido, com facções disputando o poder, poderiam enfraquecer a sua coesão.</p><p><strong>Apoio da Classe Média:</strong> O apoio de segmentos da classe média e das elites urbanas pode ser crucial para ampliar a base de apoio aos protestos. Essas camadas sociais têm o poder económico e o acesso a recursos.</p><p><strong>Revolta Sustentada:</strong> A continuidade das manifestações com o apoio de amplos sectores da sociedade poderiam criar uma pressão insustentável para o regime.</p><h2>Conclusão</h2><p>As revoltas populares têm o potencial de derrubar regimes políticos, como demonstrado em várias revoluções ao longo da história. Em Moçambique, o descontentamento crescente com a FRELIMO, as crises económicas e a percepção de um regime corrupto e autoritário criam um ambiente propenso a mudanças.</p><p>No entanto, uma mudança de regime não é garantida. Ela exigiria a convergência de uma série de factores, incluindo a mobilização popular ampla, a fragmentação interna da elite governante, a perda de apoio internacional e uma resposta ineficaz à crise económica.</p>`,
+    category:"politica", tags:["politica","sociedade"],
+    image:"FrontEndLogic/Assets/articles/revoltas.jpg",
+    legenda:"Manifestantes em Maputo, Moçambique — Reuters",
+    autor:"Wiston Baessa",
+    autorBio:"Formado em Relações Internacionais (Relação Institucional e Diplomacia) na Universidade Joaquim Chissano (Maputo). Pesquisador na área de estudos migratórios com foco em Migração Regional na África e Direitos Humanos. Fundador do Moz Humanitarian Talk-show.",
+    autorCred:"Universidade Joaquim Chissano · Pesquisador em Estudos Migratórios",
+    status:"published", featured:true, criadoEm:"2025-01-15T10:00:00.000Z"
+  },
+  {
+    id:"post_002",
+    title:"Uma visão da prática da \"banalidade do mal\" em Moçambique no período de pós-eleições",
+    excerpt:"O conceito arendtiano de 'banalidade do mal' encontra ressonância inquietante no contexto moçambicano pós-eleitoral.",
+    content:`<p>Hannah Arendt cunhou o conceito de &ldquo;banalidade do mal&rdquo; ao cobrir o julgamento de Adolf Eichmann em Jerusalém. A sua conclusão perturbadora foi que a maldade extrema não requer monstros — basta a ausência de pensamento crítico nos executores das ordens.</p><p>Em Moçambique pós-eleitoral, este conceito encontra uma ressonância inquietante. Não nos referimos a uma comparação simplista com os horrores do nazismo, mas a um padrão de comportamento institucional onde indivíduos comuns perpetuam sistemas de violência e exclusão sem reconhecerem a dimensão moral das suas acções.</p><h2>A Normalização da Violência Institucional</h2><p>O período pós-eleitoral revelou como mecanismos burocráticos e institucionais podem ser mobilizados para suprimir dissidência de forma aparentemente &ldquo;legítima&rdquo;. Prisões sem mandato, dispersão violenta de manifestantes, censura de meios de comunicação — estes actos são cometidos por funcionários que cumprem &ldquo;ordens superiores&rdquo;.</p><p>É precisamente aqui que reside a &ldquo;banalidade&rdquo;: na capacidade das estruturas de poder de transformarem o excepcional em rotineiro, o inaceitável em procedimento.</p>`,
+    category:"sociedade", tags:["sociedade","politica"],
+    image:"FrontEndLogic/Assets/articles/banalidade.jpg",
+    autor:"Rachide Cassimo Latifo", status:"published", featured:false,
+    criadoEm:"2025-01-20T10:00:00.000Z"
+  },
+  {
+    id:"post_003",
+    title:"Falar para ser entendido e não admirado",
+    excerpt:"A comunicação política e intelectual em Moçambique enfrenta um paradoxo: quanto mais erudita a linguagem, menos alcance popular.",
+    content:`<p>Existe uma tensão antiga e persistente no mundo intelectual africano entre a necessidade de rigor analítico e a aspiração à comunicação de massas. Esta tensão manifesta-se de forma particularmente aguda em Moçambique, onde o fosso entre o debate académico e o discurso público permanece profundo.</p><p>Falar para ser admirado é uma tentação compreensível. O vocabulário técnico, as referências a autores canónicos, a construção de argumentos complexos — tudo isto confere autoridade e distinção ao intelectual. Mas, ao mesmo tempo, erije barreiras que excluem precisamente aqueles cujas vidas são mais afectadas pelas questões em debate.</p><h2>A Responsabilidade do Intelectual Público</h2><p>O intelectual público tem uma responsabilidade específica: traduzir a complexidade do mundo em linguagem acessível sem sacrificar a sua essência. Em Moçambique, onde as taxas de literacia ainda apresentam desafios significativos e onde o oral continua a ter primazia sobre o escrito em muitas comunidades, esta responsabilidade é ainda mais premente.</p>`,
+    category:"cultura", tags:["cultura","sociedade"],
+    image:"FrontEndLogic/Assets/articles/falar.jpg",
+    autor:"Edson Abílio Luciano", status:"published", featured:false,
+    criadoEm:"2025-01-25T10:00:00.000Z"
+  }
+];
+
+/* Tags padrão */
+const TAGS_DEFAULT = [
+    {id:"politica",  label:"Política",   cor:"#d32f2f"},
+    {id:"sociedade", label:"Sociedade",  cor:"#1565c0"},
+    {id:"cultura",   label:"Cultura",    cor:"#015334"},
+    {id:"economia",  label:"Economia",   cor:"#e65100"},
+    {id:"historia",  label:"História",   cor:"#6a1b9a"},
+    {id:"entrevista",label:"Entrevista", cor:"#0a8a7a"}
+];
+
+const CC = {politica:'#d32f2f',sociedade:'#1565c0',cultura:'#015334',
+            economia:'#e65100',historia:'#6a1b9a',entrevista:'#0a8a7a'};
+
+/* ── BARRA DE PROGRESSO ── */
+window.addEventListener('scroll', () => {
+    const d = document.documentElement;
+    const pct = d.scrollHeight > d.clientHeight
+        ? (d.scrollTop / (d.scrollHeight - d.clientHeight)) * 100 : 0;
+    document.getElementById('progress-bar').style.width = pct + '%';
+});
+
+function readTime(html){
+    const w = (html||'').replace(/<[^>]+>/g,'').trim().split(/\s+/).filter(x=>x).length;
+    return Math.max(1, Math.round(w/200)) + ' min de leitura';
+}
+function fmtDate(iso){
+    if(!iso) return '';
+    return new Date(iso).toLocaleDateString('pt-PT',{day:'2-digit',month:'long',year:'numeric'});
+}
+
+/* ── AVATAR DO AUTOR ── */
+function autorAvatar(nome){
+    const mapa = {
+        'wiston baessa':    'profiles/Icons/EDSONA.png',
+        'edson abílio':     'profiles/Icons/EDSONA.png',
+        'rachide cassimo':  'profiles/Icons/RACHIDEC.png',
+    };
+    const key = (nome||'').toLowerCase();
+    for(const [k,v] of Object.entries(mapa)){
+        if(key.includes(k)) return { src:v, fallback:(nome||'A').charAt(0).toUpperCase() };
+    }
+    return { src:null, fallback:(nome||'A').charAt(0).toUpperCase() };
+}
+
+/* ── CARREGAR ARTIGO ── */
+async function loadArticle(){
+    const id = new URLSearchParams(location.search).get('id');
+    if(!id){ showNotFound(); return; }
+
+    /* 1. tenta JSON estático */
+    let posts = [];
+    try {
+        const r = await fetch('FrontEndLogic/Render/posts.json?v='+Date.now());
+        if(r.ok){ const d=await r.json(); posts=d.posts||d; }
+    } catch(_){}
+
+    /* 2. localStorage tem prioridade (artigos do admin) */
+    try {
+        const local = JSON.parse(localStorage.getItem('mk_posts')||'[]');
+        if(local.length > 0) posts = local;
+    } catch(_){}
+
+    /* 3. fallback embutido — garante que funciona sem servidor */
+    if(posts.length === 0) posts = POSTS_FALLBACK;
+
+    const post = posts.find(p => p.id === id);
+    if(!post){ showNotFound(); return; }
+
+    document.title = post.title + ' | Makhalelo';
+
+    /* Tags */
+    let allTags = TAGS_DEFAULT;
+    try {
+        const stored = JSON.parse(localStorage.getItem('mk_tags')||'null');
+        if(stored) allTags = stored;
+    } catch(_){}
+
+    const tag      = allTags.find(t=>t.id===post.category);
+    const tagColor = tag ? tag.cor : (CC[post.category]||'#015334');
+    const tagLabel = tag ? tag.label : (post.category||'');
+    const rt       = readTime(post.content||post.excerpt||'');
+    const dt       = fmtDate(post.criadoEm);
+    const av       = autorAvatar(post.autor);
+
+    document.getElementById('art-container').innerHTML = `
+        <div class="art-hero">
+            ${post.image
+                ? `<img class="art-hero-img" src="${_esc(post.image)}" alt="${_esc(post.title)}"
+                        onerror="this.style.display='none';this.nextElementSibling.style.display='block';">
+                   <div class="art-hero-placeholder" style="display:none;"></div>`
+                : `<div class="art-hero-placeholder"></div>`}
+            <div class="art-hero-overlay"></div>
+            <div class="art-hero-content">
+                <span class="art-category" style="background:${tagColor}">${tagLabel}</span>
+                <h1 class="art-hero-title">${_esc(post.title)}</h1>
+            </div>
+        </div>
+        ${post.legenda ? `<p class="art-img-caption art-wrap">${_esc(post.legenda)}</p>` : ''}
+
+        <div class="art-wrap">
+            <div class="art-meta">
+                <div class="art-autor-card">
+                    <div class="art-autor-av" id="av-el">
+                        ${av.src
+                            ? `<img src="${av.src}" alt="${_esc(post.autor||'')}"
+                                   onerror="this.parentNode.textContent='${av.fallback}'">`
+                            : av.fallback}
+                    </div>
+                    <div>
+                        <div class="art-autor-name">${_esc(post.autor||'Makhalelo')}</div>
+                        <div class="art-autor-role">Colaborador</div>
+                    </div>
+                </div>
+                ${dt ? `<span style="color:#ddd">|</span><span style="font-size:.78rem;color:var(--gray)">${dt}</span>` : ''}
+                <div class="art-read-time">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                    ${rt}
+                </div>
+                <div class="art-tags-meta">
+                    ${(post.tags||[]).map(tid=>{
+                        const t=allTags.find(x=>x.id===tid);
+                        return `<a class="art-tag" style="background:${t?t.cor:'#888'}"
+                            href="InitPage.html">${t?t.label:tid}</a>`;
+                    }).join('')}
+                </div>
+            </div>
+
+            <div class="art-body">${post.content||'<p>'+_esc(post.excerpt)+'</p>'}</div>
+
+            ${(post.autorBio) ? `
+            <div class="art-author-bio">
+                <div class="bio-av">
+                    ${av.src
+                        ? `<img src="${av.src}" onerror="this.style.display='none';this.parentNode.textContent='${av.fallback}'">`
+                        : av.fallback}
+                </div>
+                <div>
+                    <div class="bio-label">Sobre o autor</div>
+                    <div class="bio-name">${_esc(post.autor||'')}</div>
+                    ${post.autorCred?`<div class="bio-cred">${_esc(post.autorCred)}</div>`:''}
+                    <p class="bio-text">${_esc(post.autorBio)}</p>
+                </div>
+            </div>` : ''}
+
+            <div class="art-share">
+                <span class="share-label">Partilhar</span>
+                <button class="share-btn" onclick="copyLink()">Copiar link</button>
+                <button class="share-btn" onclick="shareWA()">WhatsApp</button>
+                <button class="share-btn" onclick="shareFB()">Facebook</button>
+            </div>
+        </div>`;
+
+    /* Relacionados */
+    const firstTag = (post.tags||[])[0];
+    if(firstTag){
+        const rel = posts.filter(p=>p.id!==id&&p.status==='published'&&(p.tags||[]).includes(firstTag)).slice(0,3);
+        if(rel.length){
+            document.getElementById('related-section').style.display='block';
+            document.getElementById('related-grid').innerHTML = rel.map(p=>{
+                const t=allTags.find(x=>x.id===p.category);
+                const c=(t?t.cor:CC[p.category])||'#888';
+                return `<a class="rel-card" href="Artigo.html?id=${encodeURIComponent(p.id)}">
+                    <div class="rel-img">
+                        ${p.image?`<img src="${_esc(p.image)}" alt="${_esc(p.title)}" loading="lazy">`:''}
+                        <span class="rel-badge" style="background:${c}">${t?t.label:p.category||''}</span>
+                    </div>
+                    <div class="rel-info">
+                        <div class="rel-title">${_esc(p.title)}</div>
+                        <span class="rel-link">Ler prévia &rsaquo;</span>
+                    </div>
+                </a>`;
+            }).join('');
+        }
+    }
+    if(typeof i18n !== 'undefined') i18n.apply();
+}
+
+function showNotFound(){
+    document.getElementById('art-container').innerHTML = `
+        <div class="not-found">
+            <h2>Artigo não encontrado</h2>
+            <p>O artigo que procura não existe ou foi removido.</p>
+            <a href="InitPage.html" class="btn-primary">Voltar ao início</a>
+        </div>`;
+}
+
+function copyLink(){ navigator.clipboard.writeText(location.href).then(()=>alert('Link copiado!')); }
+function shareWA(){  window.open('https://wa.me/?text='+encodeURIComponent(document.title+' '+location.href),'_blank'); }
+function shareFB(){  window.open('https://www.facebook.com/sharer/sharer.php?u='+encodeURIComponent(location.href),'_blank'); }
+
+loadArticle();
+</script>
+</body>
+</html>

@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="pt-mz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sobre Nós | Makhalelo</title>
+    <link rel="stylesheet" href="FrontEndLogic/Styles/Base.min.css">
+    <link rel="stylesheet" href="FrontEndLogic/Styles/anims.min.css">
+    <style>
+        :root{--bg-cream:#F9F7F2;--c-green:#015334;--c-dark:#1A1A1A;--c-gray:#777;--c-gold:#c9a84c;
+              --fh:'Times New Roman',Times,serif;--fb:'Times New Roman',Times,serif;--tr:all .3s ease;}
+        *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;text-decoration:none;}
+        body{font-family:var(--fb);background:var(--bg-cream);color:var(--c-dark);line-height:1.6;}
+
+        /* NAV */
+        .landing-nav{display:flex;justify-content:space-between;align-items:center;padding:16px 5%;
+            position:fixed;top:0;width:100%;z-index:100;background:rgba(249,247,242,.94);
+            backdrop-filter:blur(12px);border-bottom:1px solid rgba(0,0,0,.07);}
+        .logo{font-family:var(--fh);font-weight:700;font-size:1.45rem;color:var(--c-dark);}
+        .nav-group{display:flex;align-items:center;gap:20px;}
+        .nav-link-text{font-family:var(--fb);font-weight:600;font-size:.88rem;color:var(--c-dark);opacity:.7;
+            transition:var(--tr);border-bottom:2px solid transparent;padding-bottom:2px;}
+        .nav-link-text:hover,.nav-link-text.active{opacity:1;color:var(--c-green);border-bottom-color:var(--c-green);}
+        .nav-btn-outline{border:2px solid var(--c-dark);padding:7px 18px;border-radius:50px;font-weight:700;
+            font-size:.83rem;color:var(--c-dark);transition:var(--tr);}
+        .nav-btn-outline:hover{background:var(--c-dark);color:var(--bg-cream);}
+
+        /* LANG */
+        .lang-switcher{display:flex;gap:2px;background:white;border:1.5px solid rgba(0,0,0,.1);
+            border-radius:50px;padding:3px;box-shadow:0 1px 6px rgba(0,0,0,.05);}
+        .lang-btn{padding:5px 10px;border-radius:50px;font-size:.68rem;font-weight:700;
+            letter-spacing:.5px;color:#666;background:none;border:none;cursor:pointer;transition:var(--tr);}
+        .lang-btn:hover{color:var(--c-green);}
+        .lang-btn.active{background:var(--c-green);color:#fff;box-shadow:0 1px 6px rgba(1,83,52,.25);}
+
+        /* HERO */
+        .hero{background:var(--c-dark);min-height:88vh;display:flex;align-items:center;
+            padding:110px 5% 60px;position:relative;overflow:hidden;}
+        .hero::before{content:'';position:absolute;inset:0;
+            background:radial-gradient(ellipse 55% 55% at 78% 35%,rgba(1,83,52,.5),transparent 70%),
+                        radial-gradient(ellipse 35% 35% at 15% 72%,rgba(201,168,76,.1),transparent 60%);}
+        /* Pattern geométrico capulana */
+        .hero-pattern{position:absolute;right:5%;top:50%;transform:translateY(-50%);opacity:.07;pointer-events:none;}
+        .hero-year{position:absolute;bottom:-20px;right:4%;font-family:var(--fh);font-size:14rem;
+            font-weight:700;color:rgba(255,255,255,.022);line-height:1;pointer-events:none;letter-spacing:-4px;}
+        .hero-content{position:relative;z-index:2;max-width:640px;}
+        .hero-kicker{font-size:.68rem;font-weight:700;letter-spacing:4px;text-transform:uppercase;
+            color:var(--c-gold);margin-bottom:20px;display:flex;align-items:center;gap:12px;}
+        .hero-kicker::before{content:'';display:block;width:28px;height:2px;background:var(--c-gold);}
+        .hero h1{font-family:var(--fh);font-size:clamp(2.6rem,5.5vw,4.4rem);font-weight:700;
+            line-height:1.08;color:#fff;margin-bottom:24px;}
+        .hero h1 em{font-style:italic;color:var(--c-gold);font-weight:400;}
+        .hero p{font-size:1rem;color:rgba(255,255,255,.62);max-width:490px;line-height:1.85;margin-bottom:32px;}
+        .hero-btn{background:var(--c-green);color:white;padding:13px 26px;border-radius:50px;
+            font-weight:700;font-size:.88rem;transition:var(--tr);display:inline-block;}
+        .hero-btn:hover{background:#013f28;transform:translateY(-2px);box-shadow:0 8px 22px rgba(1,83,52,.35);}
+
+        /* MISSÃO */
+        .missao{background:var(--bg-cream);padding:88px 5%;}
+        .missao-inner{display:grid;grid-template-columns:1fr 1fr;gap:72px;align-items:center;max-width:1080px;margin:0 auto;}
+        .sec-kicker{font-size:.68rem;font-weight:700;letter-spacing:4px;text-transform:uppercase;color:var(--c-green);margin-bottom:12px;}
+        .sec-h2{font-family:var(--fh);font-size:clamp(1.7rem,2.8vw,2.2rem);font-weight:700;line-height:1.22;margin-bottom:20px;}
+        .sec-p{color:#555;font-size:.96rem;line-height:1.88;margin-bottom:16px;}
+        blockquote.pull{border-left:4px solid var(--c-green);padding:13px 20px;
+            background:rgba(1,83,52,.05);border-radius:0 7px 7px 0;margin-top:22px;
+            font-family:var(--fh);font-style:italic;font-size:.97rem;color:var(--c-dark);line-height:1.6;}
+        .metrics{display:grid;grid-template-columns:1fr 1fr;gap:11px;}
+        .m-card{background:var(--c-dark);border-radius:11px;padding:24px 20px;}
+        .m-card:first-child{grid-column:span 2;background:var(--c-green);}
+        .m-ghost{font-family:var(--fh);font-size:2.6rem;font-weight:700;color:rgba(255,255,255,.1);line-height:1;margin-bottom:5px;}
+        .m-lbl{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:rgba(255,255,255,.4);margin-bottom:3px;}
+        .m-val{font-family:var(--fh);font-size:1.25rem;font-weight:700;color:#fff;}
+
+        /* VALORES */
+        .valores{background:#fff;padding:80px 5%;}
+        .valores-inner{max-width:1080px;margin:0 auto;}
+        .sec-center{text-align:center;margin-bottom:46px;}
+        .sec-center h2{font-family:var(--fh);font-size:1.9rem;font-weight:700;margin-bottom:9px;}
+        .sec-center p{color:var(--c-gray);font-size:.93rem;}
+        .valores-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;}
+        .v-card{padding:28px 24px;border-radius:11px;background:var(--bg-cream);transition:var(--tr);
+            border-top:3px solid var(--c-green);}
+        .v-card:hover{transform:translateY(-5px);box-shadow:0 12px 32px rgba(0,0,0,.09);}
+        .v-card:nth-child(2){border-top-color:var(--c-gold);}
+        .v-card:nth-child(3){border-top-color:#1565c0;}
+        .v-card:nth-child(4){border-top-color:#d32f2f;}
+        .v-card:nth-child(5){border-top-color:#6a1b9a;}
+        .v-card:nth-child(6){border-top-color:#e65100;}
+        /* Ícones SVG substituem emojis */
+        .v-icon{width:30px;height:30px;margin-bottom:14px;display:block;opacity:.75;}
+        .v-title{font-family:var(--fh);font-size:.97rem;font-weight:700;margin-bottom:7px;}
+        .v-desc{font-size:.84rem;color:var(--c-gray);line-height:1.7;}
+
+        /* ÂMBITOS */
+        .ambitos{background:var(--bg-cream);padding:80px 5%;}
+        .ambitos-inner{max-width:1080px;margin:0 auto;}
+        .ambitos-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:40px;}
+        .amb-card{background:white;border-radius:11px;padding:22px 20px;border-left:4px solid var(--c-green);transition:var(--tr);}
+        .amb-card:hover{transform:translateY(-4px);box-shadow:0 10px 28px rgba(0,0,0,.08);}
+        .amb-card:nth-child(2){border-left-color:#1565c0;}
+        .amb-card:nth-child(3){border-left-color:var(--c-gold);}
+        .amb-card:nth-child(4){border-left-color:#6a1b9a;}
+        .amb-title{font-family:var(--fh);font-size:.97rem;font-weight:700;margin-bottom:10px;}
+        .amb-tags{display:flex;flex-wrap:wrap;gap:5px;}
+        .amb-tag{background:var(--bg-cream);padding:3px 9px;border-radius:50px;font-size:.7rem;font-weight:600;color:#555;}
+
+        /* EQUIPA */
+        .equipa{background:var(--c-dark);padding:80px 5%;}
+        .equipa-inner{max-width:860px;margin:0 auto;}
+        .eq-kicker{font-size:.68rem;font-weight:700;letter-spacing:4px;text-transform:uppercase;
+            color:var(--c-gold);text-align:center;margin-bottom:9px;}
+        .eq-title{font-family:var(--fh);font-size:1.9rem;color:#fff;text-align:center;
+            font-weight:700;margin-bottom:40px;}
+        .membros{display:grid;grid-template-columns:1fr 1fr;gap:18px;}
+        .membro{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.06);
+            border-radius:11px;padding:24px;display:flex;gap:16px;align-items:flex-start;transition:var(--tr);}
+        .membro:hover{background:rgba(1,83,52,.18);border-color:rgba(1,83,52,.38);transform:translateY(-3px);}
+        /* FOTO REAL */
+        .av{width:62px;height:62px;border-radius:50%;flex-shrink:0;overflow:hidden;
+            border:2px solid rgba(255,255,255,.12);position:relative;background:var(--c-green);}
+        .av img{width:100%;height:100%;object-fit:cover;display:block;}
+        .av-fallback{width:100%;height:100%;display:flex;align-items:center;justify-content:center;
+            font-family:var(--fh);font-weight:700;font-size:1.2rem;color:white;background:var(--c-green);}
+        .av-verified{position:absolute;bottom:-1px;right:-1px;width:18px;height:18px;
+            background:var(--c-gold);border-radius:50%;display:flex;align-items:center;justify-content:center;}
+        .av-verified svg{width:9px;height:9px;}
+        .m-nome{font-family:var(--fh);font-size:.95rem;font-weight:700;color:#fff;margin-bottom:2px;}
+        .m-cargo{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;
+            color:var(--c-gold);margin-bottom:8px;}
+        .m-bio{font-size:.8rem;color:rgba(255,255,255,.45);line-height:1.68;}
+        .perfil-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:9px;margin-top:38px;}
+        .perc-card{background:rgba(255,255,255,.04);border-radius:7px;padding:16px 10px;text-align:center;}
+        .perc-num{font-family:var(--fh);font-size:1.6rem;font-weight:700;color:var(--c-gold);}
+        .perc-lbl{font-size:.66rem;color:rgba(255,255,255,.4);margin-top:3px;text-transform:uppercase;letter-spacing:1px;}
+
+        /* CTA */
+        .cta-final{background:var(--c-green);padding:80px 5%;text-align:center;position:relative;overflow:hidden;}
+        .cta-final::before{content:'M';position:absolute;font-family:var(--fh);font-size:22rem;font-weight:700;
+            color:rgba(255,255,255,.04);top:50%;left:50%;transform:translate(-50%,-50%);pointer-events:none;}
+        .cta-final h2{font-family:var(--fh);font-size:clamp(1.7rem,3.5vw,2.4rem);font-weight:700;
+            color:white;margin-bottom:12px;position:relative;}
+        .cta-final p{color:rgba(255,255,255,.7);font-size:.95rem;max-width:480px;margin:0 auto 28px;position:relative;}
+        .btn-white{background:white;color:var(--c-green);padding:13px 28px;border-radius:50px;
+            font-weight:700;font-size:.9rem;transition:var(--tr);display:inline-block;position:relative;}
+        .btn-white:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.18);}
+
+        /* FOOTER */
+        footer{background:var(--c-dark);color:rgba(255,255,255,.45);padding:26px 5%;
+            display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;font-size:.82rem;}
+        .footer-logo{font-family:var(--fh);color:rgba(255,255,255,.88);font-weight:700;font-size:1.05rem;}
+        footer a{color:rgba(255,255,255,.4);transition:var(--tr);}
+        footer a:hover{color:var(--c-gold);}
+
+        @media(max-width:900px){
+            .missao-inner{grid-template-columns:1fr;gap:38px;}
+            .valores-grid{grid-template-columns:repeat(2,1fr);}
+            .membros{grid-template-columns:1fr;}
+            .ambitos-grid{grid-template-columns:1fr 1fr;}
+            .perfil-grid{grid-template-columns:repeat(3,1fr);}
+        }
+        @media(max-width:600px){
+            .hero h1{font-size:2.2rem;}
+            .valores-grid,.ambitos-grid{grid-template-columns:1fr;}
+            .metrics{grid-template-columns:1fr;} .m-card:first-child{grid-column:span 1;}
+        }
+    </style>
+</head>
+<body>
+
+<nav class="landing-nav">
+    <a href="InitPage.html" class="logo">Makhalelo</a>
+    <div class="nav-group">
+        <div class="lang-switcher">
+            <button class="lang-btn" data-lang="pt">PT</button>
+            <button class="lang-btn" data-lang="en">EN</button>
+            <button class="lang-btn" data-lang="es">ES</button>
+            <button class="lang-btn" data-lang="fr">FR</button>
+        </div>
+        <a href="sobre.html" class="nav-link-text active" data-i18n="nav_sobre">Sobre Nós</a>
+        <a href="LogOrReg.html" class="nav-btn-outline" data-i18n="nav_entrar">Entrar</a>
+    </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+    <div class="hero-pattern" aria-hidden="true">
+        <svg width="340" height="600" viewBox="0 0 340 600" fill="none">
+            <line x1="40" y1="0" x2="40" y2="600" stroke="white" stroke-width="1"/>
+            <line x1="170" y1="0" x2="170" y2="600" stroke="white" stroke-width="2"/>
+            <line x1="300" y1="0" x2="300" y2="600" stroke="white" stroke-width="1"/>
+            <line x1="0" y1="150" x2="340" y2="150" stroke="white" stroke-width=".5"/>
+            <line x1="0" y1="300" x2="340" y2="300" stroke="white" stroke-width="1.5"/>
+            <line x1="0" y1="450" x2="340" y2="450" stroke="white" stroke-width=".5"/>
+            <circle cx="170" cy="300" r="65" stroke="white" stroke-width="1.5" fill="none"/>
+            <circle cx="170" cy="300" r="32" stroke="white" stroke-width="1" fill="none"/>
+            <polygon points="170,235 230,340 110,340" stroke="white" stroke-width="1" fill="none"/>
+        </svg>
+    </div>
+    <div class="hero-year" aria-hidden="true">25</div>
+    <div class="hero-content fade-in">
+        <div class="hero-kicker" data-i18n="sobre_kicker">Sobre a Plataforma</div>
+        <h1>
+            <span data-i18n="sobre_h1a">Análise crítica,</span><br>
+            <em data-i18n="sobre_h1b">desde dentro</em><br>
+            <span data-i18n="sobre_h1c">de Moçambique.</span>
+        </h1>
+        <p data-i18n="sobre_p">Makhalelo é um espaço digital independente dedicado à publicação de artigos de opinião, análises e reflexões sobre a realidade multidimensional de Moçambique.</p>
+        <a href="LogOrReg.html" class="hero-btn"><span data-i18n="sobre_btn">Publicar na Makhalelo</span> &rarr;</a>
+    </div>
+</section>
+
+<!-- MISSÃO -->
+<section class="missao">
+    <div class="missao-inner">
+        <div class="reveal">
+            <div class="sec-kicker">Nossa Missão</div>
+            <h2 class="sec-h2">Promover um debate qualificado e pluralista sobre Moçambique</h2>
+            <p class="sec-p">Nascida da necessidade de iluminar as complexidades sociais, políticas, económicas e culturais, Makhalelo busca construir pontes entre academia, activismo e cidadania.</p>
+            <p class="sec-p">Nossa visão é ser uma referência em análises críticas, conectando veteranos com novas vozes de todas as províncias e da diáspora.</p>
+            <blockquote class="pull">"Análise desde dentro, não apenas sobre — este é o diferencial que nos define."</blockquote>
+        </div>
+        <div class="metrics reveal delay-2">
+            <div class="m-card">
+                <div class="m-lbl">Fundada em</div>
+                <div class="m-val">2025 &mdash; São Francisco do Conde, Brasil</div>
+            </div>
+            <div class="m-card">
+                <div class="m-ghost">100+</div>
+                <div class="m-lbl">Artigos</div>
+                <div class="m-val">Publicados</div>
+            </div>
+            <div class="m-card">
+                <div class="m-ghost">50+</div>
+                <div class="m-lbl">Vozes</div>
+                <div class="m-val">Colaboradores</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- VALORES -->
+<section class="valores">
+    <div class="valores-inner">
+        <div class="sec-center reveal">
+            <h2>Princípios Editoriais</h2>
+            <p>Os pilares que definem cada artigo publicado na Makhalelo</p>
+        </div>
+        <div class="valores-grid">
+            <!-- Ícones SVG em vez de emojis -->
+            <div class="v-card reveal">
+                <svg class="v-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+                <div class="v-title">Rigor Factual</div>
+                <p class="v-desc">Todas as afirmações são verificáveis. Nenhum dado sem fonte, nenhuma análise sem fundamento.</p>
+            </div>
+            <div class="v-card reveal delay-1">
+                <svg class="v-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+                <div class="v-title">Pluralismo</div>
+                <p class="v-desc">Não há linha editorial única — apenas compromisso com a qualidade e diversidade de perspectivas.</p>
+            </div>
+            <div class="v-card reveal delay-2">
+                <svg class="v-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+                <div class="v-title">Interdisciplinaridade</div>
+                <p class="v-desc">Diálogo constante entre ciências sociais, humanidades, artes e realidade concreta.</p>
+            </div>
+            <div class="v-card reveal">
+                <svg class="v-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+                <div class="v-title">Linguagem Acessível</div>
+                <p class="v-desc">Análise profunda em linguagem clara. O pensamento crítico não precisa ser hermético.</p>
+            </div>
+            <div class="v-card reveal delay-1">
+                <svg class="v-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+                <div class="v-title">Foco em Soluções</div>
+                <p class="v-desc">Crítica construtiva com propostas alternativas. Denunciar não basta — é preciso propor.</p>
+            </div>
+            <div class="v-card reveal delay-2">
+                <svg class="v-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                <div class="v-title">Transparência</div>
+                <p class="v-desc">Autores declaram potenciais conflitos de interesse. Credibilidade se constrói com honestidade.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ÂMBITOS -->
+<section class="ambitos">
+    <div class="ambitos-inner">
+        <div class="sec-center reveal">
+            <div class="sec-kicker" style="text-align:center;">Áreas Temáticas</div>
+            <h2 class="sec-h2" style="text-align:center;">O que cobrimos</h2>
+        </div>
+        <div class="ambitos-grid">
+            <div class="amb-card reveal">
+                <div class="amb-title">Realidade Política</div>
+                <div class="amb-tags">
+                    <span class="amb-tag">Democracia</span><span class="amb-tag">Eleições</span>
+                    <span class="amb-tag">Governação</span><span class="amb-tag">Descentralização</span>
+                </div>
+            </div>
+            <div class="amb-card reveal delay-1">
+                <div class="amb-title">Economia &amp; Desenvolvimento</div>
+                <div class="amb-tags">
+                    <span class="amb-tag">Recursos Naturais</span><span class="amb-tag">Dívida Pública</span>
+                    <span class="amb-tag">Clima</span>
+                </div>
+            </div>
+            <div class="amb-card reveal delay-2">
+                <div class="amb-title">Realidade Social</div>
+                <div class="amb-tags">
+                    <span class="amb-tag">Educação</span><span class="amb-tag">Saúde</span>
+                    <span class="amb-tag">Género</span><span class="amb-tag">Urbanização</span>
+                </div>
+            </div>
+            <div class="amb-card reveal delay-3">
+                <div class="amb-title">Cultura &amp; Identidade</div>
+                <div class="amb-tags">
+                    <span class="amb-tag">Línguas</span><span class="amb-tag">Arte</span>
+                    <span class="amb-tag">Memória</span><span class="amb-tag">Media</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- EQUIPA -->
+<section class="equipa">
+    <div class="equipa-inner">
+        <p class="eq-kicker reveal">As pessoas por trás</p>
+        <h2 class="eq-title reveal">Conselho Fundador</h2>
+        <div class="membros">
+            <div class="membro reveal">
+                <div class="av">
+                    <img src="profiles/Icons/EDSONA.png" alt="Edson Abílio Luciano"
+                         onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
+                    <div class="av-fallback" style="display:none;">EA</div>
+                    <div class="av-verified">
+                        <svg viewBox="0 0 10 10" fill="none"><path d="M2 5l2 2 4-4" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    </div>
+                </div>
+                <div>
+                    <div class="m-nome">Edson Abílio Luciano</div>
+                    <div class="m-cargo">Presidente &amp; Coordenador Editorial</div>
+                    <p class="m-bio">Coordena a visão editorial da plataforma, integrando vozes da diáspora moçambicana com rigor analítico e pluralismo de perspectivas.</p>
+                </div>
+            </div>
+            <div class="membro reveal delay-1">
+                <div class="av" style="border-color:rgba(21,101,192,.3);">
+                    <img src="profiles/Icons/RACHIDEC.png" alt="Rachide Cassimo Latifo"
+                         onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
+                    <div class="av-fallback" style="display:none;background:#1565c0;">RC</div>
+                    <div class="av-verified">
+                        <svg viewBox="0 0 10 10" fill="none"><path d="M2 5l2 2 4-4" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    </div>
+                </div>
+                <div>
+                    <div class="m-nome">Rachide Cassimo Latifo</div>
+                    <div class="m-cargo">Secretário Permanente</div>
+                    <p class="m-bio">Responsável pela gestão editorial e institucional, garantindo coerência entre os princípios fundadores e a execução quotidiana da plataforma.</p>
+                </div>
+            </div>
+        </div>
+        <div class="perfil-grid reveal">
+            <div class="perc-card"><div class="perc-num">60%</div><div class="perc-lbl">Diáspora</div></div>
+            <div class="perc-card"><div class="perc-num">20%</div><div class="perc-lbl">Jornalistas</div></div>
+            <div class="perc-card"><div class="perc-num">10%</div><div class="perc-lbl">Activistas</div></div>
+            <div class="perc-card"><div class="perc-num">5%</div><div class="perc-lbl">Gestores</div></div>
+            <div class="perc-card"><div class="perc-num">5%</div><div class="perc-lbl">Académicos</div></div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA FINAL -->
+<section class="cta-final">
+    <h2 class="reveal">Tem uma análise para partilhar?</h2>
+    <p class="reveal delay-1">Submeta o seu artigo e contribua para o enriquecimento do pensamento crítico moçambicano.</p>
+    <a href="LogOrReg.html" class="btn-white reveal delay-2">Submeter Artigo &rarr;</a>
+</section>
+
+<footer>
+    <span class="footer-logo">Makhalelo</span>
+    <span data-i18n="footer_copy">© 2025 Makhalelo. Todos os direitos reservados.</span>
+    <div style="display:flex;gap:16px;">
+        <a href="sobre.html"    data-i18n="nav_sobre">Sobre Nós</a>
+        <a href="LogOrReg.html" data-i18n="nav_entrar">Entrar</a>
+    </div>
+</footer>
+
+<script src="security.js"></script>
+<script src="ACore.js"></script>
+<script src="i18n.js"></script>
+<script>
+    const obs = new IntersectionObserver(entries => {
+        entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('visible'); });
+    }, { threshold:.1, rootMargin:'0px 0px -40px 0px' });
+    document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+
+    /* Actualiza nav se logado */
+    const s = Auth.getSessao();
+    if(s){
+        const btn=document.querySelector('.nav-btn-outline');
+        if(btn){ btn.textContent=s.role==='ADM'?'Painel':s.name.split(' ')[0]; btn.href=s.role==='ADM'?'panel.html':'#'; btn.removeAttribute('data-i18n'); }
+    }
+</script>
+</body>
+</html>

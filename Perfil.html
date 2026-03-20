@@ -1,0 +1,833 @@
+<!DOCTYPE html>
+<html lang="pt-mz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meu Perfil | Makhalelo</title>
+    <link rel="stylesheet" href="FrontEndLogic/Styles/Base.min.css">
+    <style>
+/* ================================================================
+   PERFIL V3 — Banner customizável + avatar upload
+================================================================ */
+:root{
+    --g:#015334;--g2:#013f28;--dk:#111;--bg:#F9F7F2;--wh:#fff;
+    --br:#e5e7eb;--gy:#6b7280;--gd:#c9a84c;--rd:#c62828;
+    --fh:'Times New Roman',Times,serif;--fb:'Times New Roman',Times,serif;
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;text-decoration:none;}
+body{font-family:var(--fb);background:var(--bg);color:var(--dk);line-height:1.6;}
+button,input,select,textarea{font-family:var(--fb);}button{cursor:pointer;}
+
+/* ── NAV ── */
+.nav{position:sticky;top:0;z-index:200;background:rgba(249,247,242,.97);
+    backdrop-filter:blur(14px);border-bottom:1px solid rgba(0,0,0,.07);
+    padding:0 5%;display:flex;align-items:center;height:56px;gap:16px;}
+.logo{font-family:var(--fh);font-weight:700;font-size:1.25rem;color:var(--dk);margin-right:auto;}
+.lang-switcher{display:flex;gap:2px;background:rgba(0,0,0,.06);border-radius:50px;padding:3px;}
+.lang-btn{padding:4px 10px;border-radius:50px;font-size:.65rem;font-weight:700;letter-spacing:.5px;color:#666;background:none;border:none;cursor:pointer;transition:.18s;}
+.lang-btn.active{background:var(--g);color:#fff;}
+.nbtn{padding:6px 16px;border-radius:50px;font-size:.78rem;font-weight:700;border:1.5px solid;transition:.18s;}
+.nbtn.ol{border-color:rgba(0,0,0,.15);color:var(--dk);background:none;}
+.nbtn.ol:hover{border-color:var(--g);color:var(--g);}
+.nbtn.rd{background:#fff0f0;color:var(--rd);border-color:transparent;}
+.nbtn.rd:hover{background:var(--rd);color:#fff;}
+
+/* ════════════════════════════════════
+   BANNER + AVATAR SECTION
+════════════════════════════════════ */
+.profile-outer{position:relative;}
+
+/* BANNER */
+.banner{
+    height:220px;background:#1a1a1a;position:relative;overflow:hidden;
+    background-image:linear-gradient(135deg,#0f1f17 0%,#1a2a1a 50%,#0d1a0d 100%);
+}
+.banner-img{width:100%;height:100%;object-fit:cover;display:block;}
+.banner-overlay{
+    position:absolute;inset:0;
+    background:linear-gradient(to bottom,transparent 40%,rgba(0,0,0,.65) 100%);
+}
+
+/* Botão de editar banner */
+.btn-edit-banner{
+    position:absolute;top:14px;right:16px;
+    display:flex;align-items:center;gap:6px;
+    padding:7px 14px;background:rgba(0,0,0,.45);backdrop-filter:blur(8px);
+    border:1px solid rgba(255,255,255,.2);border-radius:50px;
+    color:rgba(255,255,255,.85);font-size:.74rem;font-weight:700;
+    cursor:pointer;transition:.2s;
+}
+.btn-edit-banner:hover{background:rgba(0,0,0,.65);color:#fff;}
+.btn-edit-banner svg{opacity:.7;}
+
+/* CARD DO PERFIL (fica sobre o banner) */
+.profile-card{
+    background:var(--wh);border-radius:16px 16px 0 0;
+    margin:-32px 5% 0;position:relative;z-index:10;
+    padding:0 28px 24px;box-shadow:0 -4px 24px rgba(0,0,0,.08);
+}
+
+/* AVATAR */
+.av-wrap{
+    display:flex;align-items:flex-end;justify-content:space-between;
+    padding-top:0;margin-bottom:16px;
+}
+.av-container{position:relative;margin-top:-44px;}
+.pav{
+    width:88px;height:88px;border-radius:50%;flex-shrink:0;
+    background:var(--g);display:flex;align-items:center;justify-content:center;
+    font-family:var(--fh);font-weight:700;font-size:2rem;color:#fff;
+    overflow:hidden;border:4px solid var(--wh);
+    box-shadow:0 4px 16px rgba(0,0,0,.15);cursor:pointer;
+    transition:.2s;
+}
+.pav:hover .av-overlay{opacity:1;}
+.pav img{width:100%;height:100%;object-fit:cover;pointer-events:none;}
+.av-overlay{
+    position:absolute;inset:0;border-radius:50%;
+    background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;
+    opacity:0;transition:.2s;pointer-events:none;
+}
+.av-overlay svg{color:#fff;}
+.av-hint{font-size:.64rem;color:var(--gy);margin-top:5px;text-align:center;}
+
+/* BOTÃO EDITAR PERFIL */
+.btn-edit-profile{
+    display:flex;align-items:center;gap:6px;
+    padding:7px 16px;background:var(--bg);border:1.5px solid var(--br);
+    border-radius:50px;font-size:.76rem;font-weight:700;color:var(--dk);
+    cursor:pointer;transition:.2s;margin-top:16px;
+}
+.btn-edit-profile:hover{border-color:var(--g);color:var(--g);}
+
+/* INFOS DO UTILIZADOR */
+.pinfo{flex:1;padding-left:16px;}
+.pname{font-family:var(--fh);font-size:1.35rem;font-weight:700;margin-bottom:2px;}
+.pusername{font-size:.84rem;color:var(--gy);}
+.pemail{font-size:.76rem;color:var(--gy);margin-top:1px;opacity:.7;}
+.pbadge{
+    display:inline-flex;align-items:center;gap:5px;
+    padding:4px 12px;border-radius:50px;font-size:.64rem;font-weight:700;
+    letter-spacing:.8px;text-transform:uppercase;margin-top:8px;
+}
+.pbadge.reader{background:rgba(1,83,52,.1);color:var(--g);border:1px solid rgba(1,83,52,.2);}
+.pbadge.adm{background:rgba(57,73,171,.1);color:#3949ab;border:1px solid rgba(57,73,171,.2);}
+.pbadge::before{content:'';width:5px;height:5px;border-radius:50%;background:currentColor;}
+
+/* MODAL DE EDIÇÃO */
+.modal-overlay{
+    position:fixed;inset:0;background:rgba(0,0,0,.5);backdrop-filter:blur(4px);
+    z-index:999;display:none;align-items:center;justify-content:center;padding:20px;
+}
+.modal-overlay.open{display:flex;}
+.modal{
+    background:var(--wh);border-radius:16px;width:100%;max-width:420px;
+    box-shadow:0 20px 60px rgba(0,0,0,.2);overflow:hidden;
+}
+.modal-head{
+    padding:20px 24px;border-bottom:1px solid var(--br);
+    display:flex;justify-content:space-between;align-items:center;
+}
+.modal-head h3{font-family:var(--fh);font-size:1rem;font-weight:700;}
+.modal-close{width:28px;height:28px;border:none;background:#f5f5f5;border-radius:50%;
+    display:flex;align-items:center;justify-content:center;cursor:pointer;color:#666;transition:.18s;}
+.modal-close:hover{background:#e5e5e5;color:var(--dk);}
+.modal-body{padding:22px 24px;}
+.modal-foot{padding:14px 24px;border-top:1px solid var(--br);display:flex;gap:9px;justify-content:flex-end;}
+
+/* Cores predefinidas do banner */
+.color-presets{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:16px;}
+.color-preset{
+    height:42px;border-radius:8px;cursor:pointer;border:2px solid transparent;
+    transition:.18s;position:relative;
+}
+.color-preset:hover{transform:scale(1.05);box-shadow:0 4px 12px rgba(0,0,0,.2);}
+.color-preset.selected{border-color:var(--g);box-shadow:0 0 0 3px rgba(1,83,52,.25);}
+.color-preset::after{content:'✓';position:absolute;inset:0;display:flex;align-items:center;
+    justify-content:center;color:#fff;font-size:.85rem;font-weight:700;opacity:0;}
+.color-preset.selected::after{opacity:1;}
+.or-divider{text-align:center;font-size:.72rem;color:#bbb;margin:14px 0;
+    display:flex;align-items:center;gap:10px;}
+.or-divider::before,.or-divider::after{content:'';flex:1;height:1px;background:var(--br);}
+
+/* Drop de upload */
+.up-drop{
+    border:1.5px dashed var(--br);border-radius:10px;padding:22px;
+    text-align:center;cursor:pointer;transition:.18s;background:#fafafa;
+}
+.up-drop:hover{border-color:var(--g);background:#f0faf5;}
+.up-drop-t{font-weight:700;font-size:.82rem;color:var(--dk);margin-top:7px;}
+.up-drop-s{font-size:.7rem;color:#bbb;margin-top:2px;}
+.up-preview{width:100%;height:120px;object-fit:cover;border-radius:8px;display:none;margin-top:10px;}
+.up-preview.av-p{width:80px;height:80px;border-radius:50%;margin:10px auto 0;}
+
+/* ── TABS ── */
+.tabs-bar{
+    background:var(--wh);border-bottom:1px solid var(--br);
+    padding:0 5%;display:flex;gap:0;position:sticky;top:56px;z-index:100;
+}
+.tab{
+    padding:14px 20px;border:none;background:none;font-size:.84rem;font-weight:600;
+    color:var(--gy);cursor:pointer;transition:.18s;position:relative;
+}
+.tab:hover{color:var(--dk);}
+.tab.active{color:var(--g);}
+.tab.active::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;
+    background:var(--g);border-radius:2px 2px 0 0;}
+
+/* ── CONTEÚDO ── */
+.content{max-width:820px;margin:0 auto;padding:28px 20px 80px;}
+
+/* SUBMISSÕES */
+.sub-empty{text-align:center;padding:60px 20px;background:var(--wh);border-radius:12px;border:1px solid var(--br);}
+.sub-empty svg{display:block;margin:0 auto 16px;opacity:.2;}
+.sub-empty h3{font-family:var(--fh);font-size:1rem;margin-bottom:6px;}
+.sub-empty p{font-size:.83rem;color:var(--gy);margin-bottom:18px;}
+.btn-go{display:inline-block;padding:9px 22px;background:var(--g);color:#fff;
+    border-radius:50px;font-weight:700;font-size:.82rem;transition:.18s;}
+.btn-go:hover{background:var(--g2);}
+
+.sub-card{background:var(--wh);border-radius:12px;border:1px solid var(--br);
+    margin-bottom:10px;overflow:hidden;transition:.18s;}
+.sub-card:hover{box-shadow:0 4px 16px rgba(0,0,0,.07);}
+.sub-card-top{padding:16px 20px;display:flex;align-items:flex-start;gap:12px;cursor:pointer;}
+.sub-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:6px;}
+.sub-title{font-family:var(--fh);font-size:.9rem;font-weight:700;margin-bottom:4px;line-height:1.4;}
+.sub-meta{font-size:.72rem;color:var(--gy);display:flex;gap:8px;flex-wrap:wrap;align-items:center;}
+.sub-status{font-size:.71rem;font-weight:700;}
+.sub-chevron{margin-left:auto;width:15px;height:15px;flex-shrink:0;opacity:.35;transition:transform .2s;}
+.sub-card.open .sub-chevron{transform:rotate(180deg);}
+.sub-body{display:none;padding:0 20px 16px;border-top:1px solid #f5f5f5;}
+.sub-card.open .sub-body{display:block;}
+.sub-excerpt{font-size:.83rem;color:var(--gy);line-height:1.7;font-style:italic;margin-bottom:10px;}
+.rej-box{background:#fff5f5;border:1px solid #ffcdd2;border-radius:8px;padding:12px 16px;margin-top:8px;}
+.rej-label{font-size:.63rem;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--rd);margin-bottom:4px;}
+.rej-text{font-size:.82rem;color:#b71c1c;line-height:1.65;}
+.btn-resub{display:inline-flex;align-items:center;gap:6px;margin-top:12px;
+    padding:7px 16px;background:#e8f5e9;color:var(--g);
+    border:1.5px solid rgba(1,83,52,.2);border-radius:50px;font-size:.75rem;font-weight:700;cursor:pointer;transition:.18s;}
+.btn-resub:hover{background:var(--g);color:#fff;}
+
+/* FORMULÁRIO */
+.form-section{background:var(--wh);border-radius:12px;border:1px solid var(--br);overflow:hidden;}
+.form-hd{padding:24px 28px;border-bottom:1px solid var(--br);}
+.form-hd h2{font-family:var(--fh);font-size:1.1rem;font-weight:700;margin-bottom:5px;}
+.form-hd p{font-size:.82rem;color:var(--gy);line-height:1.65;}
+.form-bd{padding:24px 28px;}
+.fl{font-size:.64rem;font-weight:700;text-transform:uppercase;letter-spacing:.9px;
+    color:#505050;margin-bottom:5px;display:block;margin-top:18px;}
+.fl:first-child{margin-top:0;}
+.fl small{font-weight:400;text-transform:none;letter-spacing:0;color:#bbb;margin-left:6px;font-size:.64rem;}
+.fi{width:100%;padding:10px 13px;border:1.5px solid var(--br);border-radius:8px;
+    font-size:.88rem;background:#fafafa;transition:.18s;color:var(--dk);}
+.fi:focus{border-color:var(--g);background:var(--wh);box-shadow:0 0 0 3px rgba(1,83,52,.07);outline:none;}
+.fsel{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%23999' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:32px;}
+.fta{min-height:80px;resize:vertical;line-height:1.65;}
+.frow{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+.idrop{border:1.5px dashed var(--br);border-radius:10px;padding:24px 16px;text-align:center;cursor:pointer;transition:.18s;background:#fafafa;margin-top:5px;}
+.idrop:hover{border-color:var(--g);background:#f0faf5;}
+.idrop svg{display:block;margin:0 auto 7px;opacity:.3;}
+.idrop-t{font-weight:700;font-size:.82rem;}
+.idrop-s{font-size:.7rem;color:#bbb;margin-top:2px;}
+.cprev{max-height:130px;border-radius:8px;margin:0 auto;display:none;}
+.tb{display:flex;gap:3px;flex-wrap:wrap;padding:6px 8px;background:#f5f5f5;
+    border:1.5px solid var(--br);border-bottom:none;border-radius:7px 7px 0 0;}
+.tbb{padding:4px 9px;background:var(--wh);border:1px solid #e0e0e0;border-radius:5px;
+    font-size:.73rem;font-weight:700;cursor:pointer;transition:.15s;color:#444;}
+.tbb:hover{background:var(--g);color:#fff;border-color:var(--g);}
+.rea{border:1.5px solid var(--br);border-radius:0 0 7px 7px;min-height:250px;padding:14px 16px;
+    font-size:.92rem;font-family:var(--fh);line-height:1.88;background:var(--wh);}
+.rea:focus{border-color:var(--g);outline:none;}
+.rea p{margin-bottom:1em;}
+.rea h2{font-size:1.15rem;margin:1.5em 0 .5em;border-left:4px solid var(--g);padding-left:12px;}
+.rea blockquote{border-left:4px solid var(--g);padding:10px 16px;background:#f9faf8;margin:1em 0;font-style:italic;}
+.abnt-toggle{display:inline-flex;align-items:center;gap:7px;padding:8px 14px;
+    background:rgba(1,83,52,.07);border:1.5px solid rgba(1,83,52,.18);border-radius:8px;
+    font-size:.76rem;font-weight:700;color:var(--g);cursor:pointer;transition:.18s;margin-bottom:12px;}
+.abnt-toggle:hover{background:rgba(1,83,52,.13);}
+.abnt-guide{display:none;background:#f0faf5;border:1px solid rgba(1,83,52,.18);border-radius:10px;
+    padding:16px 18px;font-size:.79rem;color:#333;line-height:1.85;margin-bottom:14px;}
+.abnt-guide.show{display:block;}
+.abnt-guide h4{font-family:var(--fh);font-size:.86rem;color:var(--g);margin-bottom:10px;font-weight:700;}
+.abnt-guide code{background:rgba(1,83,52,.1);padding:1px 5px;border-radius:3px;font-size:.76rem;}
+.wc-lbl{font-weight:400;text-transform:none;letter-spacing:0;color:#bbb;margin-left:6px;font-size:.64rem;}
+.msg{display:none;border-radius:9px;padding:12px 16px;font-size:.83rem;line-height:1.6;margin-bottom:14px;}
+.msg.show{display:block;}
+.msg.ok{background:#e8f5e9;border:1.5px solid #a5d6a7;color:#1b5e20;}
+.msg.err{background:#ffebee;border:1.5px solid #ef9a9a;color:#b71c1c;}
+.btn-submit{width:100%;padding:13px;background:var(--g);color:#fff;border:none;border-radius:50px;
+    font-weight:700;font-size:.9rem;transition:.2s;display:flex;align-items:center;justify-content:center;gap:8px;margin-top:18px;}
+.btn-submit:hover{background:var(--g2);transform:translateY(-1px);}
+.btn-submit:disabled{opacity:.6;cursor:not-allowed;transform:none;}
+.sp{width:15px;height:15px;border:2px solid rgba(255,255,255,.4);border-top-color:#fff;
+    border-radius:50%;animation:spin .7s linear infinite;display:none;}
+.btn-submit.loading .sp{display:block;}
+.btn-submit.loading span:first-child{display:none;}
+
+/* BOTÕES DO MODAL */
+.mbtn{padding:9px 18px;border-radius:50px;font-size:.8rem;font-weight:700;border:none;cursor:pointer;transition:.18s;}
+.mbtn.cancel{background:#f5f5f5;color:var(--gy);}
+.mbtn.cancel:hover{background:#e8e8e8;}
+.mbtn.save{background:var(--g);color:#fff;}
+.mbtn.save:hover{background:var(--g2);}
+
+footer{background:var(--dk);color:rgba(255,255,255,.4);padding:22px 5%;
+    display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;font-size:.8rem;}
+.f-logo{font-family:var(--fh);color:rgba(255,255,255,.88);font-weight:700;}
+footer a{color:rgba(255,255,255,.3);transition:.18s;}footer a:hover{color:var(--gd);}
+
+@keyframes spin{to{transform:rotate(360deg);}}
+@media(max-width:640px){
+    .frow{grid-template-columns:1fr;}
+    .banner{height:160px;}
+    .profile-card{margin:-24px 3% 0;padding:0 18px 20px;}
+    .pav{width:72px;height:72px;font-size:1.5rem;}
+    .pname{font-size:1.2rem;}
+    .form-bd,.form-hd{padding:18px 20px;}
+    .tabs-bar{padding:0 4%;}
+    .tab{padding:12px 14px;font-size:.78rem;}
+    .color-presets{grid-template-columns:repeat(5,1fr);}
+    .btn-edit-banner{font-size:.68rem;padding:5px 10px;}
+}
+    </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav">
+    <a href="InitPage.html" class="logo">Makhalelo</a>
+    <div class="lang-switcher">
+        <button class="lang-btn" data-lang="pt">PT</button>
+        <button class="lang-btn" data-lang="en">EN</button>
+        <button class="lang-btn" data-lang="es">ES</button>
+        <button class="lang-btn" data-lang="fr">FR</button>
+    </div>
+    <a href="InitPage.html" class="nbtn ol">&#8592; Início</a>
+    <button class="nbtn rd" onclick="doLogout()">Sair</button>
+</nav>
+
+<!-- MODAL EDITAR BANNER -->
+<div class="modal-overlay" id="modal-banner">
+    <div class="modal">
+        <div class="modal-head">
+            <h3>Personalizar Banner</h3>
+            <button class="modal-close" onclick="closeModal('modal-banner')">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+        </div>
+        <div class="modal-body">
+            <label style="font-size:.67rem;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:#555;display:block;margin-bottom:10px;">Cor predefinida</label>
+            <div class="color-presets" id="color-presets">
+                <div class="color-preset selected" data-color="linear-gradient(135deg,#0f1f17 0%,#1a2a1a 50%,#0d1a0d 100%)" style="background:linear-gradient(135deg,#0f1f17,#1a2a1a,#0d1a0d)"></div>
+                <div class="color-preset" data-color="linear-gradient(135deg,#1a1a2e 0%,#16213e 50%,#0f3460 100%)" style="background:linear-gradient(135deg,#1a1a2e,#16213e,#0f3460)"></div>
+                <div class="color-preset" data-color="linear-gradient(135deg,#2d0a00 0%,#4a0e00 50%,#7d1200 100%)" style="background:linear-gradient(135deg,#2d0a00,#4a0e00,#7d1200)"></div>
+                <div class="color-preset" data-color="linear-gradient(135deg,#1a0a2e 0%,#2d1454 50%,#3d1a6e 100%)" style="background:linear-gradient(135deg,#1a0a2e,#2d1454,#3d1a6e)"></div>
+                <div class="color-preset" data-color="linear-gradient(135deg,#0a1a2e 0%,#0d2a40 50%,#0a3050 100%)" style="background:linear-gradient(135deg,#0a1a2e,#0d2a40,#0a3050)"></div>
+                <div class="color-preset" data-color="linear-gradient(135deg,#1a1200 0%,#2e2000 50%,#4a3400 100%)" style="background:linear-gradient(135deg,#1a1200,#2e2000,#4a3400)"></div>
+                <div class="color-preset" data-color="linear-gradient(135deg,#0d2b0d 0%,#154015 50%,#015334 100%)" style="background:linear-gradient(135deg,#0d2b0d,#154015,#015334)"></div>
+                <div class="color-preset" data-color="linear-gradient(135deg,#1a1a1a 0%,#2d2d2d 50%,#111 100%)" style="background:linear-gradient(135deg,#1a1a1a,#2d2d2d,#111)"></div>
+                <div class="color-preset" data-color="linear-gradient(135deg,#2e1515 0%,#3d1f1f 50%,#1a0a0a 100%)" style="background:linear-gradient(135deg,#2e1515,#3d1f1f,#1a0a0a)"></div>
+                <div class="color-preset" data-color="linear-gradient(135deg,#0a2a1a 0%,#c9a84c22 50%,#0f2010 100%)" style="background:linear-gradient(135deg,#0a2a1a,#1a3a1a,#0f2010)"></div>
+            </div>
+            <div class="or-divider">ou</div>
+            <div class="up-drop" onclick="document.getElementById('banner-file').click()" id="banner-drop">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#aaa" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                <div class="up-drop-t">Carregar imagem própria</div>
+                <div class="up-drop-s">JPG, PNG — recomendado 1200×300px</div>
+                <img id="banner-preview" class="up-preview" alt="Preview">
+            </div>
+            <input type="file" id="banner-file" accept="image/jpeg,image/png,image/webp" style="display:none;" onchange="previewUpload('banner-file','banner-preview','banner-drop')">
+        </div>
+        <div class="modal-foot">
+            <button class="mbtn cancel" onclick="closeModal('modal-banner')">Cancelar</button>
+            <button class="mbtn save" onclick="saveBanner()">Guardar Banner</button>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL EDITAR AVATAR -->
+<div class="modal-overlay" id="modal-avatar">
+    <div class="modal">
+        <div class="modal-head">
+            <h3>Foto de Perfil</h3>
+            <button class="modal-close" onclick="closeModal('modal-avatar')">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+        </div>
+        <div class="modal-body">
+            <div style="display:flex;justify-content:center;margin-bottom:18px;">
+                <div class="pav" id="av-modal-preview" style="width:96px;height:96px;font-size:2.2rem;cursor:default;pointer-events:none;"></div>
+            </div>
+            <div class="up-drop" onclick="document.getElementById('avatar-file').click()" id="avatar-drop">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#aaa" stroke-width="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                <div class="up-drop-t">Selecionar foto</div>
+                <div class="up-drop-s">JPG, PNG — quadrada, máx. 2MB</div>
+            </div>
+            <input type="file" id="avatar-file" accept="image/jpeg,image/png,image/webp" style="display:none;" onchange="previewAvatar(this)">
+            <button class="mbtn cancel" style="margin-top:12px;width:100%;text-align:center;border-radius:8px;" onclick="removeAvatar()" id="btn-remove-av">Remover foto</button>
+        </div>
+        <div class="modal-foot">
+            <button class="mbtn cancel" onclick="closeModal('modal-avatar')">Cancelar</button>
+            <button class="mbtn save" onclick="saveAvatar()">Guardar Foto</button>
+        </div>
+    </div>
+</div>
+
+<!-- PERFIL -->
+<div class="profile-outer">
+    <!-- BANNER -->
+    <div class="banner" id="banner">
+        <img id="banner-img" class="banner-img" alt="Banner" style="display:none;">
+        <div class="banner-overlay"></div>
+        <button class="btn-edit-banner" onclick="openModal('modal-banner')">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+            Editar banner
+        </button>
+    </div>
+
+    <!-- CARD DO PERFIL -->
+    <div class="profile-card">
+        <div class="av-wrap">
+            <!-- AVATAR CLICÁVEL -->
+            <div class="av-container" onclick="openModal('modal-avatar')" style="cursor:pointer;">
+                <div class="pav" id="p-av">
+                    <div class="av-overlay">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+                    </div>
+                </div>
+                <div class="av-hint">clique para editar</div>
+            </div>
+
+            <div class="pinfo">
+                <div class="pname"     id="p-name">—</div>
+                <div class="pusername" id="p-username"></div>
+                <div class="pemail"    id="p-email"></div>
+                <div class="pbadge reader" id="p-badge">Leitor</div>
+            </div>
+
+            <button class="btn-edit-profile" onclick="openModal('modal-banner')">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+                Personalizar
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- TABS BAR -->
+<div class="tabs-bar">
+    <button class="tab active" onclick="setTab('sub',this)">Minhas Submissões</button>
+    <button class="tab"        onclick="setTab('novo',this)">Publicar Artigo</button>
+</div>
+
+<!-- CONTEÚDO -->
+<div class="content">
+
+    <div id="tab-sub">
+        <div id="sub-lista"></div>
+    </div>
+
+    <div id="tab-novo" style="display:none;">
+        <div class="form-section">
+            <div class="form-hd">
+                <h2>Submeter Artigo para Revisão</h2>
+                <p>O seu artigo será revisto pela equipa editorial antes de ser publicado. Processo: 3–7 dias úteis.</p>
+            </div>
+            <div class="form-bd">
+                <div id="msg-ok"  class="msg ok"></div>
+                <div id="msg-err" class="msg err"></div>
+                <form onsubmit="submitArtigo(event)" novalidate>
+                    <label class="fl">Título *</label>
+                    <input type="text" id="s-title" class="fi" placeholder="Título do artigo..." maxlength="200">
+                    <div class="frow" style="margin-top:2px;">
+                        <div>
+                            <label class="fl">Categoria *</label>
+                            <select id="s-cat" class="fi fsel"><option value="">Selecionar...</option></select>
+                        </div>
+                        <div>
+                            <label class="fl">Tags <small>(por vírgula)</small></label>
+                            <input type="text" id="s-tags" class="fi" placeholder="politica, cultura">
+                        </div>
+                    </div>
+                    <label class="fl">Imagem de Capa</label>
+                    <div class="idrop" onclick="document.getElementById('s-img').click()">
+                        <div id="idtxt">
+                            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#aaa" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                            <div class="idrop-t">Clique para selecionar imagem</div>
+                            <div class="idrop-s">JPG, PNG — máx. 2MB</div>
+                        </div>
+                        <img id="cprev" class="cprev" alt="Capa">
+                    </div>
+                    <input type="file" id="s-img" accept="image/jpeg,image/png,image/webp" style="display:none;" onchange="prevCapa(this)">
+                    <label class="fl">Legenda da Imagem</label>
+                    <input type="text" id="s-legenda" class="fi" placeholder="Créditos fotográficos..." maxlength="200">
+                    <label class="fl">Resumo * <small>(2-3 frases)</small></label>
+                    <textarea id="s-excerpt" class="fi fta" placeholder="Resumo atrativo do artigo..." maxlength="500"></textarea>
+                    <label class="fl">Conteúdo * <span class="wc-lbl" id="wc-lbl"></span></label>
+                    <button type="button" class="abnt-toggle" onclick="document.getElementById('abnt-guide').classList.toggle('show')">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="9" y1="3" x2="9" y2="21"/><path d="M13 8h4M13 12h4M13 16h4"/></svg>
+                        Guia ABNT + Modelo
+                    </button>
+                    <div class="abnt-guide" id="abnt-guide">
+                        <h4>Guia rápido ABNT</h4>
+                        <strong>Citação directa curta</strong> (até 3 linhas): <code>"Texto." (SOBRENOME, ano, p. X)</code><br>
+                        <strong>Citação longa</strong> (+ 3 linhas): bloco separado, use botão "Cit."<br>
+                        <strong>Citação indirecta</strong>: paráfrase + <code>(SOBRENOME, ano)</code><br><br>
+                        <strong>Livro:</strong> <code>SOBRENOME, N. Título. Cidade: Editora, ano.</code><br>
+                        <strong>Artigo:</strong> <code>SOBRENOME, N. Título. Revista, v.X, n.X, p.X, ano.</code>
+                    </div>
+                    <div class="tb">
+                        <button type="button" class="tbb" onclick="fmt('bold')"><b>B</b></button>
+                        <button type="button" class="tbb" onclick="fmt('italic')"><i>I</i></button>
+                        <button type="button" class="tbb" onclick="fmt('underline')"><u>U</u></button>
+                        <button type="button" class="tbb" onclick="fmt('formatBlock','h2')">H2</button>
+                        <button type="button" class="tbb" onclick="fmt('formatBlock','h3')">H3</button>
+                        <button type="button" class="tbb" onclick="fmt('formatBlock','blockquote')">Cit.</button>
+                        <button type="button" class="tbb" onclick="fmt('insertUnorderedList')">Lista</button>
+                        <button type="button" class="tbb" onclick="insRef()">Ref.</button>
+                        <button type="button" class="tbb" onclick="usarTemplate()">Modelo</button>
+                        <button type="button" class="tbb" onclick="fmt('removeFormat')">Limpar</button>
+                    </div>
+                    <div id="s-content" class="rea" contenteditable="true" oninput="updateWC()"></div>
+                    <label class="fl" style="margin-top:14px;">Nota para o editor <small>(opcional)</small></label>
+                    <textarea id="s-nota" class="fi fta" placeholder="Contexto ou pedidos especiais..." maxlength="400" style="min-height:55px;"></textarea>
+                    <button type="submit" class="btn-submit" id="btn-sub">
+                        <span>Submeter para revisão</span>
+                        <span class="sp"></span>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer>
+    <span class="f-logo">Makhalelo</span>
+    <span>© 2025 Makhalelo. Todos os direitos reservados.</span>
+    <div style="display:flex;gap:16px;">
+        <a href="sobre.html">Sobre Nós</a>
+        <a href="InitPage.html">Início</a>
+    </div>
+</footer>
+
+<script src="ACore.js"></script>
+<script src="Recordum.js"></script>
+<script src="i18n.js"></script>
+<script>
+/* ── GUARD ── */
+const _s = Auth.getSessao();
+if(!_s){ window.location.href='LogOrReg.html?from=perfil.html'; }
+const _e = s=>String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+
+/* ── CHAVES DE PERFIL NO LOCALSTORAGE ── */
+const PROFILE_KEY = () => 'mk_profile_' + (_s?_s.id:'anon');
+
+function loadProfile(){ try{ return JSON.parse(localStorage.getItem(PROFILE_KEY())||'{}'); }catch{ return {}; } }
+function saveProfile(data){
+    const current = loadProfile();
+    localStorage.setItem(PROFILE_KEY(), JSON.stringify({...current,...data}));
+}
+
+/* ── ESTADO DO MODAL DE BANNER ── */
+let _pendingBannerColor = null;
+let _pendingBannerImg   = null;
+
+/* ── INIT ── */
+(function(){
+    if(!_s) return;
+
+    /* Dados de perfil guardados */
+    const prof = loadProfile();
+
+    /* Avatar */
+    const av = document.getElementById('p-av');
+    const photo = prof.photo || _s.photo;
+    if(photo){ const img=document.createElement('img'); img.src=photo; av.appendChild(img); }
+    else av.textContent = (_s.name||'U').charAt(0).toUpperCase();
+
+    /* Banner */
+    applyBanner(prof.bannerColor || null, prof.bannerImg || null);
+
+    /* Info */
+    document.getElementById('p-name').textContent     = _s.name||'';
+    document.getElementById('p-username').textContent = '@'+(_s.username||'');
+    if(_s.email) document.getElementById('p-email').textContent = _s.email;
+    const b = document.getElementById('p-badge');
+    if(_s.role==='ADM'){ b.textContent='Admin'; b.className='pbadge adm'; }
+
+    /* Categorias */
+    Recordum.getTags().forEach(t=>{
+        const o=document.createElement('option'); o.value=t.id; o.textContent=t.label;
+        document.getElementById('s-cat').appendChild(o);
+    });
+
+    /* Prefill modal avatar com estado actual */
+    const avModal = document.getElementById('av-modal-preview');
+    if(photo){ const img=document.createElement('img'); img.src=photo; avModal.appendChild(img); }
+    else avModal.textContent = (_s.name||'U').charAt(0).toUpperCase();
+
+    /* Hash */
+    if(location.hash==='#novo') setTab('novo', document.querySelectorAll('.tab')[1]);
+    else renderSubmissoes();
+})();
+
+function applyBanner(color, imgSrc){
+    const banner = document.getElementById('banner');
+    const img    = document.getElementById('banner-img');
+    if(imgSrc){
+        img.src = imgSrc; img.style.display='block';
+        banner.style.backgroundImage = 'none';
+    } else if(color){
+        img.style.display = 'none';
+        banner.style.backgroundImage = color;
+    } else {
+        img.style.display = 'none';
+        banner.style.backgroundImage = 'linear-gradient(135deg,#0f1f17 0%,#1a2a1a 50%,#0d1a0d 100%)';
+    }
+}
+
+/* ── MODAIS ── */
+function openModal(id){
+    document.getElementById(id).classList.add('open');
+    if(id==='modal-banner'){
+        _pendingBannerColor = null; _pendingBannerImg = null;
+        /* Marca o preset actual */
+        const prof=loadProfile();
+        document.querySelectorAll('.color-preset').forEach(p=>{
+            p.classList.toggle('selected', p.dataset.color===(prof.bannerColor||'linear-gradient(135deg,#0f1f17 0%,#1a2a1a 50%,#0d1a0d 100%)'));
+        });
+        document.getElementById('banner-preview').style.display='none';
+    }
+}
+function closeModal(id){ document.getElementById(id).classList.remove('open'); }
+
+/* Fechar clicando fora */
+document.querySelectorAll('.modal-overlay').forEach(m=>{
+    m.addEventListener('click',e=>{ if(e.target===m) m.classList.remove('open'); });
+});
+
+/* ── BANNER PRESETS ── */
+document.querySelectorAll('.color-preset').forEach(p=>{
+    p.addEventListener('click',()=>{
+        document.querySelectorAll('.color-preset').forEach(x=>x.classList.remove('selected'));
+        p.classList.add('selected');
+        _pendingBannerColor = p.dataset.color;
+        _pendingBannerImg   = null;
+        /* Remove preview de imagem */
+        document.getElementById('banner-preview').style.display='none';
+    });
+});
+
+function previewUpload(fileId, previewId, dropId){
+    const inp = document.getElementById(fileId);
+    if(!inp.files||!inp.files[0]) return;
+    if(inp.files[0].size>4*1024*1024){ alert('Imagem demasiado grande (máx. 4MB)'); inp.value=''; return; }
+    const r=new FileReader();
+    r.onload=e=>{
+        const img=document.getElementById(previewId);
+        img.src=e.target.result; img.style.display='block';
+        _pendingBannerImg   = e.target.result;
+        _pendingBannerColor = null;
+        /* Desmarca presets */
+        document.querySelectorAll('.color-preset').forEach(x=>x.classList.remove('selected'));
+    };
+    r.readAsDataURL(inp.files[0]);
+}
+
+function saveBanner(){
+    const prof={};
+    if(_pendingBannerImg){
+        prof.bannerImg=_pendingBannerImg; prof.bannerColor=null;
+    } else if(_pendingBannerColor){
+        prof.bannerColor=_pendingBannerColor; prof.bannerImg=null;
+    } else {
+        /* Usa o preset seleccionado */
+        const sel=document.querySelector('.color-preset.selected');
+        if(sel){ prof.bannerColor=sel.dataset.color; prof.bannerImg=null; }
+    }
+    saveProfile(prof);
+    applyBanner(prof.bannerColor, prof.bannerImg);
+    closeModal('modal-banner');
+}
+
+/* ── AVATAR ── */
+let _pendingAvatarImg = null;
+let _removeAvatar     = false;
+
+function previewAvatar(inp){
+    if(!inp.files||!inp.files[0]) return;
+    if(inp.files[0].size>2*1024*1024){ alert('Imagem demasiado grande (máx. 2MB)'); inp.value=''; return; }
+    const r=new FileReader();
+    r.onload=e=>{
+        _pendingAvatarImg=e.target.result; _removeAvatar=false;
+        /* Actualiza o preview no modal */
+        const avModal=document.getElementById('av-modal-preview');
+        avModal.innerHTML=''; const img=document.createElement('img'); img.src=e.target.result; avModal.appendChild(img);
+    };
+    r.readAsDataURL(inp.files[0]);
+}
+
+function removeAvatar(){
+    _pendingAvatarImg=null; _removeAvatar=true;
+    const avModal=document.getElementById('av-modal-preview');
+    avModal.innerHTML=(_s.name||'U').charAt(0).toUpperCase();
+}
+
+function saveAvatar(){
+    let photo = null;
+    if(_pendingAvatarImg) photo = _pendingAvatarImg;
+    else if(!_removeAvatar) { closeModal('modal-avatar'); return; }
+
+    saveProfile({photo});
+
+    /* Actualiza o avatar no perfil */
+    const av=document.getElementById('p-av');
+    av.innerHTML='';
+    if(photo){ const img=document.createElement('img'); img.src=photo; av.appendChild(img); }
+    else av.textContent=(_s.name||'U').charAt(0).toUpperCase();
+
+    /* Actualiza sessão em memória */
+    const sessao=Auth.getSessao();
+    if(sessao){ sessao.photo=photo; sessionStorage.setItem('mk_user',JSON.stringify(sessao)); }
+
+    closeModal('modal-avatar');
+    _pendingAvatarImg=null; _removeAvatar=false;
+}
+
+function doLogout(){ Auth.logout(); window.location.href='InitPage.html'; }
+
+/* ── TABS ── */
+function setTab(name, btn){
+    document.querySelectorAll('.tab').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('tab-sub').style.display  = name==='sub' ?'block':'none';
+    document.getElementById('tab-novo').style.display = name==='novo'?'block':'none';
+    if(name==='sub') renderSubmissoes();
+}
+
+/* ── SUBMISSÕES ── */
+function renderSubmissoes(){
+    const all  = JSON.parse(localStorage.getItem('mk_pending')||'[]');
+    const mine = _s ? all.filter(p=>p.autorId===_s.id) : [];
+    const el   = document.getElementById('sub-lista');
+
+    if(!mine.length){
+        el.innerHTML=`
+        <div class="sub-empty">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                <polyline points="14 2 14 8 20 8"/>
+                <line x1="16" y1="13" x2="8" y2="13"/>
+                <line x1="16" y1="17" x2="8" y2="17"/>
+            </svg>
+            <h3>Ainda não submeteu nenhum artigo</h3>
+            <p>Partilhe a sua análise sobre Moçambique com a nossa comunidade.</p>
+            <a href="#" class="btn-go" onclick="setTab('novo',document.querySelectorAll('.tab')[1]);return false;">Escrever artigo</a>
+        </div>`;
+        return;
+    }
+
+    const cc={pending:'#e65100',approved:'#2e7d32',rejected:'#c62828'};
+    const ct={pending:'Em revisão',approved:'Aprovado',rejected:'Rejeitado'};
+
+    el.innerHTML=mine.map((p,idx)=>{
+        const gi=all.findIndex(x=>x.id===p.id);
+        const sc=cc[p.status]||'#888', st=ct[p.status]||p.status;
+        const dt=p.criadoEm?new Date(p.criadoEm).toLocaleDateString('pt-PT',{day:'2-digit',month:'short',year:'numeric'}):'';
+        const rej=p.motivoRejeicao?`<div class="rej-box"><div class="rej-label">Feedback do editor</div><div class="rej-text">${_e(p.motivoRejeicao)}</div></div>`:'';
+        const resub=p.status==='rejected'?`<button class="btn-resub" onclick="resubmit(${gi})"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>Resubmeter com alterações</button>`:'';
+        return`<div class="sub-card" id="sc-${idx}">
+            <div class="sub-card-top" onclick="toggleSC(${idx})">
+                <div class="sub-dot" style="background:${sc}"></div>
+                <div style="flex:1;min-width:0;">
+                    <div class="sub-title">${_e(p.title||'(sem título)')}</div>
+                    <div class="sub-meta"><span>${dt}</span><span>${p.category||''}</span><span class="sub-status" style="color:${sc}">${st}</span></div>
+                </div>
+                <svg class="sub-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+            </div>
+            <div class="sub-body">
+                ${p.excerpt?`<p class="sub-excerpt">${_e(p.excerpt)}</p>`:''}
+                ${rej}${resub}
+            </div>
+        </div>`;
+    }).join('');
+}
+
+function toggleSC(idx){ const el=document.getElementById('sc-'+idx); if(el)el.classList.toggle('open'); }
+
+function resubmit(gi){
+    const all=JSON.parse(localStorage.getItem('mk_pending')||'[]');
+    const p=all[gi]; if(!p) return;
+    ['s-title','s-tags','s-excerpt','s-legenda','s-nota'].forEach(id=>document.getElementById(id).value='');
+    document.getElementById('s-title').value=p.title||'';
+    document.getElementById('s-cat').value=p.category||'';
+    document.getElementById('s-tags').value=(p.tags||[]).join(', ');
+    document.getElementById('s-excerpt').value=p.excerpt||'';
+    document.getElementById('s-content').innerHTML=p.content||'';
+    updateWC();
+    setTab('novo',document.querySelectorAll('.tab')[1]);
+    window.scrollTo({top:0,behavior:'smooth'});
+}
+
+/* ── EDITOR ── */
+function fmt(cmd,v){ document.getElementById('s-content').focus(); v?document.execCommand(cmd,false,v):document.execCommand(cmd,false,null); }
+function lnk(){ const u=prompt('URL:'); if(u) fmt('createLink',u); }
+function insRef(){ const r=prompt('Referência ABNT:'); if(r){ document.getElementById('s-content').focus(); document.execCommand('insertHTML',false,`<p>${r}</p>`); } }
+function usarTemplate(){
+    if(document.getElementById('s-content').innerHTML.trim()!==''&&!confirm('Substituir conteúdo actual?')) return;
+    document.getElementById('s-content').innerHTML=`<h2>Introdução</h2><p>Apresente o tema e os objectivos do artigo.</p>\n<h2>Desenvolvimento</h2><p>Desenvolva a análise e os argumentos.</p><blockquote>Citação directa: "Texto." (SOBRENOME, ano, p. X)</blockquote>\n<h2>Conclusão</h2><p>Sintetize os argumentos principais.</p>\n<h2>Referências</h2><p>SOBRENOME, Nome. <em>Título</em>. Cidade: Editora, ano.</p>`;
+    updateWC();
+}
+function prevCapa(inp){
+    if(!inp.files||!inp.files[0]) return;
+    if(inp.files[0].size>2*1024*1024){ alert('Máx. 2MB'); inp.value=''; return; }
+    const r=new FileReader();
+    r.onload=e=>{ document.getElementById('cprev').src=e.target.result; document.getElementById('cprev').style.display='block'; document.getElementById('idtxt').style.display='none'; };
+    r.readAsDataURL(inp.files[0]);
+}
+function updateWC(){
+    const n=(document.getElementById('s-content').innerText||'').trim().split(/\s+/).filter(w=>w).length;
+    const el=document.getElementById('wc-lbl');
+    el.textContent=n+' palavras';
+    el.style.color=n<80?'#e65100':n>4000?'#c62828':'#4caf50';
+}
+
+async function submitArtigo(e){
+    e.preventDefault(); if(!_s){ alert('Sessão expirada.'); return; }
+    const title=document.getElementById('s-title').value.trim();
+    const cat=document.getElementById('s-cat').value;
+    const tags=document.getElementById('s-tags').value.split(',').map(t=>t.trim()).filter(Boolean);
+    const excerpt=document.getElementById('s-excerpt').value.trim();
+    const content=document.getElementById('s-content').innerHTML.trim();
+    const legenda=document.getElementById('s-legenda').value.trim();
+    const nota=document.getElementById('s-nota').value.trim();
+    const cprev=document.getElementById('cprev');
+    const image=(cprev.style.display!=='none'&&cprev.src.startsWith('data:'))?cprev.src:null;
+    const mE=document.getElementById('msg-err'), mO=document.getElementById('msg-ok');
+    mE.classList.remove('show'); mO.classList.remove('show');
+    if(!title){mE.textContent='Título obrigatório.';mE.classList.add('show');return;}
+    if(!cat){mE.textContent='Selecione uma categoria.';mE.classList.add('show');return;}
+    if(!excerpt){mE.textContent='Resumo obrigatório.';mE.classList.add('show');return;}
+    if(!content||content==='<br>'){mE.textContent='Conteúdo vazio.';mE.classList.add('show');return;}
+    const wc=(document.getElementById('s-content').innerText||'').trim().split(/\s+/).filter(w=>w).length;
+    if(wc<80){mE.textContent='Mínimo de 80 palavras.';mE.classList.add('show');return;}
+    const btn=document.getElementById('btn-sub');
+    btn.classList.add('loading');btn.disabled=true;
+    try{
+        const uid=()=>Date.now().toString(36)+Math.random().toString(36).substr(2,5);
+        const pending=JSON.parse(localStorage.getItem('mk_pending')||'[]');
+        pending.push({id:'pend_'+uid(),title,category:cat,tags,excerpt,content,legenda,nota,image,
+            autor:_s.name,autorId:_s.id,autorEmail:_s.email||'',status:'pending',criadoEm:new Date().toISOString()});
+        localStorage.setItem('mk_pending',JSON.stringify(pending));
+        mO.innerHTML='<strong>Submetido com sucesso!</strong><br>A equipa vai rever em breve.';
+        mO.classList.add('show'); mO.scrollIntoView({behavior:'smooth'});
+        ['s-title','s-tags','s-excerpt','s-legenda','s-nota'].forEach(id=>document.getElementById(id).value='');
+        document.getElementById('s-cat').value='';document.getElementById('s-content').innerHTML='';
+        document.getElementById('cprev').style.display='none';document.getElementById('idtxt').style.display='block';
+        document.getElementById('wc-lbl').textContent='';
+        setTimeout(()=>setTab('sub',document.querySelectorAll('.tab')[0]),2200);
+    }catch(_){mE.textContent='Erro ao submeter.';mE.classList.add('show');}
+    finally{btn.classList.remove('loading');btn.disabled=false;}
+}
+</script>
+</body>
+</html>

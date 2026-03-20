@@ -1,0 +1,836 @@
+<!DOCTYPE html>
+<html lang="pt-mz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel — Makhalelo</title>
+    <meta name="robots" content="noindex,nofollow">
+    <style>
+        :root {
+            --green:  #015334;
+            --green2: #013f28;
+            --dark:   #111111;
+            --sidebar:#131313;
+            --bg:     #f4f3ef;
+            --white:  #ffffff;
+            --gray:   #6b7280;
+            --border: #e5e7eb;
+            --gold:   #c9a84c;
+            --red:    #c62828;
+            --fh: 'Times New Roman', Times, serif;
+            --fb: 'Times New Roman', Times, serif;
+            --sh:  0 1px 3px rgba(0,0,0,.07), 0 1px 2px rgba(0,0,0,.04);
+            --sh2: 0 4px 20px rgba(0,0,0,.10);
+            --r: 8px;
+            --tr: .18s ease;
+        }
+        *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; outline:none; text-decoration:none; }
+        body { font-family:var(--fb); background:var(--bg); color:var(--dark); line-height:1.6; font-size:14px; }
+        button, input, select, textarea { font-family:var(--fb); }
+        button { cursor:pointer; }
+
+        /* ══ GUARD ══ */
+        #guard { min-height:100vh; display:flex; align-items:center; justify-content:center; background:var(--bg); }
+        .gbox  { background:var(--white); padding:42px 38px; border-radius:var(--r); box-shadow:var(--sh2); width:100%; max-width:320px; }
+        .glogo { font-family:var(--fh); font-size:1.35rem; font-weight:700; color:var(--green); margin-bottom:1px; }
+        .gsub  { font-size:.64rem; letter-spacing:3px; text-transform:uppercase; color:#bbb; margin-bottom:26px; }
+        .gerr  { display:none; font-size:.78rem; color:var(--red); background:#fff5f5; padding:8px 11px; border-radius:5px; border-left:2px solid var(--red); margin-bottom:12px; }
+        .gerr.show { display:block; }
+        .fi  { width:100%; padding:10px 12px; margin-bottom:10px; border:1.5px solid var(--border); border-radius:6px; font-size:.88rem; background:#fafafa; transition:var(--tr); color:var(--dark); }
+        .fi:focus { border-color:var(--green); background:var(--white); box-shadow:0 0 0 3px rgba(1,83,52,.08); }
+        .ig  { position:relative; } .ig .fi { padding-right:38px; }
+        .itg { position:absolute; right:11px; top:10px; background:none; border:none; opacity:.35; font-size:.82rem; transition:var(--tr); }
+        .itg:hover { opacity:.75; }
+        .bg  { width:100%; padding:12px; background:var(--green); color:white; border:none; border-radius:50px; font-weight:700; font-size:.88rem; letter-spacing:.3px; transition:var(--tr); display:flex; align-items:center; justify-content:center; gap:8px; }
+        .bg:hover { background:var(--green2); }
+
+        /* Lang */
+        .lang-sw { display:flex; gap:2px; background:#f0f0ec; border-radius:50px; padding:3px; margin-bottom:20px; justify-content:center; }
+        .lang-b  { padding:5px 11px; border-radius:50px; font-size:.67rem; font-weight:700; letter-spacing:.5px; color:#888; background:none; border:none; cursor:pointer; transition:var(--tr); }
+        .lang-b:hover { color:var(--dark); }
+        .lang-b.active { background:var(--white); color:var(--green); box-shadow:0 1px 4px rgba(0,0,0,.12); }
+
+        /* ══ LAYOUT ══ */
+        #painel { display:none; }
+        .lay { display:flex; min-height:100vh; }
+
+        /* Sidebar */
+        .sb  { width:200px; background:var(--sidebar); display:flex; flex-direction:column; position:sticky; top:0; height:100vh; flex-shrink:0; }
+        .sb-brand { padding:20px 18px 16px; border-bottom:1px solid rgba(255,255,255,.055); }
+        .sb-brand-name { font-family:var(--fh); font-weight:700; color:white; font-size:1.05rem; }
+        .sb-brand-role { font-size:.6rem; letter-spacing:2.5px; text-transform:uppercase; color:var(--gold); margin-top:2px; opacity:.85; }
+        .sb-nav { padding:10px 0; flex:1; }
+        .sbi  { display:flex; align-items:center; gap:9px; padding:8px 18px; color:rgba(255,255,255,.38); font-size:.8rem; font-weight:500; cursor:pointer; transition:var(--tr); border-left:2px solid transparent; letter-spacing:.1px; }
+        .sbi:hover { color:rgba(255,255,255,.8); background:rgba(255,255,255,.03); }
+        .sbi.active { color:white; background:rgba(1,83,52,.22); border-left-color:var(--green); }
+        .sbi-mark { width:4px; height:4px; border-radius:50%; background:currentColor; flex-shrink:0; opacity:.4; }
+        .sbi.active .sbi-mark { opacity:1; background:var(--green); }
+        .sb-sep { height:1px; background:rgba(255,255,255,.05); margin:6px 18px; }
+        .sb-foot { padding:14px 18px; border-top:1px solid rgba(255,255,255,.055); }
+        .sb-name { color:rgba(255,255,255,.9); font-weight:700; font-size:.82rem; display:block; }
+        .sb-role { color:rgba(255,255,255,.3); font-size:.7rem; }
+        .sb-exit { color:rgba(210,60,60,.55); cursor:pointer; font-size:.74rem; margin-top:6px; display:inline-block; transition:var(--tr); }
+        .sb-exit:hover { color:#e57373; }
+
+        /* Main */
+        .pc { flex:1; overflow-y:auto; padding:30px 34px; }
+        .ph { display:flex; justify-content:space-between; align-items:center; margin-bottom:26px; }
+        .ph h1 { font-family:var(--fh); font-size:1.3rem; font-weight:700; }
+        .badge-adm { background:var(--green); color:white; padding:3px 10px; border-radius:50px; font-size:.62rem; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; }
+
+        /* Stats */
+        .sg { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:24px; }
+        .sc { background:var(--white); padding:18px; border-radius:var(--r); box-shadow:var(--sh); border-top:2px solid transparent; }
+        .sc:nth-child(1) { border-top-color:var(--green); }
+        .sc:nth-child(2) { border-top-color:#1565c0; }
+        .sc:nth-child(3) { border-top-color:var(--gold); }
+        .sc:nth-child(4) { border-top-color:#6a1b9a; }
+        .sc-num { font-family:var(--fh); font-size:1.9rem; font-weight:700; line-height:1; color:var(--dark); }
+        .sc-lbl { font-size:.7rem; color:var(--gray); margin-top:4px; text-transform:uppercase; letter-spacing:.5px; }
+
+        /* Card */
+        .pcard { background:var(--white); border-radius:var(--r); padding:22px 24px; box-shadow:var(--sh); margin-bottom:16px; }
+        .pcard-h { font-family:var(--fh); font-size:.9rem; font-weight:700; color:var(--dark); margin-bottom:16px; padding-bottom:11px; border-bottom:1px solid var(--border); letter-spacing:.1px; }
+
+        /* Form */
+        .fl { font-size:.67rem; font-weight:700; text-transform:uppercase; letter-spacing:.8px; color:#505050; margin-bottom:5px; margin-top:15px; display:block; }
+        .fip { width:100%; padding:9px 12px; border:1.5px solid var(--border); border-radius:6px; font-size:.87rem; background:#fafafa; transition:var(--tr); color:var(--dark); }
+        .fip:focus { border-color:var(--green); background:var(--white); box-shadow:0 0 0 3px rgba(1,83,52,.07); }
+        .frow { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+        .fsel { appearance:none; background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%23999' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E"); background-repeat:no-repeat; background-position:right 11px center; padding-right:30px; cursor:pointer; }
+        .fta { min-height:78px; resize:vertical; line-height:1.65; }
+
+        /* Upload zona */
+        .idrop { border:1.5px dashed #d1d5db; border-radius:var(--r); padding:26px 20px; text-align:center; cursor:pointer; transition:var(--tr); background:#fbfbfb; margin-top:5px; }
+        .idrop:hover { border-color:var(--green); background:#f0faf5; }
+        .idrop-title { font-weight:700; font-size:.83rem; color:var(--dark); margin-top:5px; }
+        .idrop-sub   { font-size:.7rem; color:#aaa; margin-top:2px; }
+        .cprev { max-height:150px; border-radius:6px; margin:0 auto; display:none; }
+
+        /* Toolbar */
+        .tb  { display:flex; gap:3px; flex-wrap:wrap; padding:6px 8px; background:#f8f8f8; border:1.5px solid var(--border); border-bottom:none; border-radius:6px 6px 0 0; }
+        .tbb { padding:4px 9px; background:var(--white); border:1px solid #e0e0e0; border-radius:4px; font-size:.73rem; font-weight:700; transition:var(--tr); color:#444; }
+        .tbb:hover { background:var(--green); color:white; border-color:var(--green); }
+        .rea { border:1.5px solid var(--border); border-radius:0 0 6px 6px; min-height:230px; padding:13px; font-size:.88rem; font-family:var(--fh); line-height:1.8; background:var(--white); }
+        .rea:focus { border-color:var(--green); }
+        .rea p { margin-bottom:10px; }
+        .rea h2 { font-size:1.15rem; margin:18px 0 9px; }
+        .rea blockquote { border-left:3px solid var(--green); padding:8px 14px; background:#f9faf9; margin:12px 0; font-style:italic; }
+
+        /* ── LISTA DE POSTS ── */
+        .pl { background:var(--white); border-radius:var(--r); box-shadow:var(--sh); overflow:hidden; }
+        .pl-head { display:grid; grid-template-columns:1fr 120px 100px 90px 96px; gap:0; padding:9px 18px; background:#f9f9f7; border-bottom:1px solid var(--border); }
+        .pl-hcell { font-size:.65rem; font-weight:700; text-transform:uppercase; letter-spacing:.8px; color:var(--gray); }
+        .pr { display:grid; grid-template-columns:1fr 120px 100px 90px 96px; gap:0; padding:12px 18px; border-bottom:1px solid #f0f0f0; align-items:center; transition:var(--tr); }
+        .pr:last-child { border-bottom:none; }
+        .pr:hover { background:#fafffe; }
+        .pr-title { font-weight:700; font-size:.84rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; padding-right:12px; }
+        .pr-cat { font-size:.75rem; }
+        .prtag { display:inline-block; padding:2px 8px; border-radius:50px; font-size:.64rem; font-weight:700; color:white; }
+        .pr-autor { font-size:.76rem; color:var(--gray); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+        .pr-status { font-size:.73rem; font-weight:600; }
+        .pr-actions { display:flex; gap:5px; justify-content:flex-end; }
+        .prb { padding:4px 10px; border-radius:5px; font-size:.72rem; font-weight:600; border:1.5px solid var(--border); background:var(--white); color:#444; transition:var(--tr); }
+        .prb:hover { border-color:var(--green); color:var(--green); }
+        .prb.del:hover { border-color:var(--red); color:var(--red); }
+
+        /* Search */
+        .search-bar { background:var(--white); border-radius:var(--r); box-shadow:var(--sh); padding:11px 16px; display:flex; align-items:center; gap:10px; margin-bottom:14px; }
+        .search-bar input { border:none; background:none; font-size:.87rem; flex:1; color:var(--dark); font-family:var(--fb); }
+        .search-bar input::placeholder { color:#bbb; }
+        .search-bar input:focus { outline:none; }
+        .search-icon { width:14px; height:14px; flex-shrink:0; opacity:.35; }
+
+        /* ── TAGS ── */
+        .tags-tbl { background:var(--white); border-radius:var(--r); box-shadow:var(--sh); overflow:hidden; }
+        .tags-tbl-head { display:grid; grid-template-columns:26px 1fr 90px 80px; gap:0; padding:9px 16px; background:#f9f9f7; border-bottom:1px solid var(--border); }
+        .tags-tbl-hcell { font-size:.65rem; font-weight:700; text-transform:uppercase; letter-spacing:.8px; color:var(--gray); }
+        .tag-row { display:grid; grid-template-columns:26px 1fr 90px 80px; gap:0; padding:11px 16px; border-bottom:1px solid #f0f0f0; align-items:center; transition:var(--tr); }
+        .tag-row:last-child { border-bottom:none; }
+        .tag-row:hover { background:#fafffe; }
+        .tag-dot  { width:10px; height:10px; border-radius:50%; }
+        .tag-name { font-weight:700; font-size:.84rem; }
+        .tag-code { font-family:monospace; font-size:.76rem; color:var(--gray); background:#f4f4f2; padding:2px 7px; border-radius:4px; display:inline-block; }
+        .tag-rm   { padding:4px 10px; border-radius:5px; font-size:.71rem; font-weight:600; border:1.5px solid var(--border); background:var(--white); color:var(--gray); transition:var(--tr); }
+        .tag-rm:hover { border-color:var(--red); color:var(--red); }
+        .add-tag-area { display:flex; gap:10px; align-items:flex-end; flex-wrap:wrap; padding:14px 16px; background:#fafafa; border-top:1px solid var(--border); }
+
+        /* ── TRÁFEGO ── */
+        .trf-coming { background:var(--sidebar); border-radius:var(--r); padding:22px 26px; display:flex; align-items:center; justify-content:space-between; margin-bottom:18px; gap:18px; }
+        .trf-coming h3 { font-family:var(--fh); font-size:.95rem; font-weight:700; color:white; margin-bottom:4px; }
+        .trf-coming p  { font-size:.78rem; color:rgba(255,255,255,.42); max-width:500px; line-height:1.55; }
+        .trf-pill { background:var(--gold); color:#111; padding:5px 13px; border-radius:50px; font-size:.67rem; font-weight:700; letter-spacing:1px; text-transform:uppercase; white-space:nowrap; }
+        .trf-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-bottom:16px; }
+        .trf-card { background:var(--white); border-radius:var(--r); padding:18px 20px; box-shadow:var(--sh); border-left:3px solid var(--border); }
+        .trf-card:nth-child(1){ border-left-color:var(--green); }
+        .trf-card:nth-child(2){ border-left-color:#1565c0; }
+        .trf-card:nth-child(3){ border-left-color:var(--gold); }
+        .trf-card:nth-child(4){ border-left-color:#d32f2f; }
+        .trf-card:nth-child(5){ border-left-color:#6a1b9a; }
+        .trf-card:nth-child(6){ border-left-color:#0a8a7a; }
+        .trf-num { font-family:var(--fh); font-size:1.7rem; font-weight:700; color:var(--dark); line-height:1; }
+        .trf-lbl { font-size:.68rem; color:var(--gray); margin-top:4px; text-transform:uppercase; letter-spacing:.5px; }
+        .trf-note{ font-size:.7rem; color:#bbb; margin-top:5px; font-style:italic; }
+        .chart-ph { background:var(--white); border-radius:var(--r); box-shadow:var(--sh); height:170px; display:flex; align-items:center; justify-content:center; flex-direction:column; gap:8px; border:1.5px dashed var(--border); margin-bottom:16px; }
+        .chart-ph-label { font-size:.78rem; color:#bbb; }
+        .trf-sources { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; }
+        .trf-src { background:var(--white); border-radius:var(--r); padding:16px 18px; box-shadow:var(--sh); }
+        .trf-src-name { font-weight:700; font-size:.84rem; margin-bottom:3px; }
+        .trf-src-desc { font-size:.76rem; color:var(--gray); }
+
+        /* Botões */
+        .bm { background:var(--green); color:white; padding:8px 17px; border-radius:50px; font-weight:700; font-size:.8rem; border:none; transition:var(--tr); letter-spacing:.3px; }
+        .bm:hover { background:var(--green2); transform:translateY(-1px); }
+
+        /* Modal */
+        .mover { position:fixed; inset:0; background:rgba(0,0,0,.38); display:none; align-items:center; justify-content:center; z-index:9999; backdrop-filter:blur(4px); }
+        .mover.open { display:flex; }
+        .mbox { background:var(--white); border-radius:var(--r); padding:26px; max-width:370px; width:90%; box-shadow:var(--sh2); }
+        .mbox h3 { font-family:var(--fh); font-size:.98rem; font-weight:700; margin-bottom:7px; }
+        .mbox p  { color:var(--gray); font-size:.82rem; line-height:1.6; margin-bottom:18px; }
+        .mbtns { display:flex; gap:7px; justify-content:flex-end; }
+        .bcanc { padding:7px 14px; background:#f0f0ee; border-radius:6px; font-weight:600; font-size:.78rem; border:none; transition:var(--tr); }
+        .bcanc:hover { background:#e4e4e0; }
+        .bdelc { padding:7px 14px; background:var(--red); color:white; border-radius:6px; font-weight:700; font-size:.78rem; border:none; transition:var(--tr); }
+        .bdelc:hover { background:#a81f1f; }
+
+        /* Toast */
+        .toast { position:fixed; bottom:18px; right:18px; background:var(--dark); color:white; padding:9px 15px; border-radius:6px; font-size:.8rem; font-weight:600; z-index:99999; transform:translateY(55px); opacity:0; transition:all .28s cubic-bezier(.4,0,.2,1); box-shadow:0 8px 24px rgba(0,0,0,.18); }
+        .toast.show { transform:translateY(0); opacity:1; }
+        .toast.ok  { border-left:3px solid #4caf50; }
+        .toast.err { border-left:3px solid var(--red); }
+        .toast.inf { border-left:3px solid var(--gold); }
+
+        /* Empty */
+        .empty { text-align:center; padding:42px 20px; color:var(--gray); background:var(--white); border-radius:var(--r); box-shadow:var(--sh); }
+        .empty strong { display:block; font-family:var(--fh); font-size:.95rem; color:var(--dark); margin-bottom:5px; }
+
+        @keyframes spin { to { transform:rotate(360deg); } }
+        @media(max-width:780px) { .sb{display:none;} .sg{grid-template-columns:1fr 1fr;} .frow{grid-template-columns:1fr;} .trf-grid{grid-template-columns:1fr 1fr;} .pl-head,.pr{grid-template-columns:1fr auto;} }
+    </style>
+</head>
+<body>
+
+<div id="toast" class="toast"></div>
+
+<div class="mover" id="mdel">
+    <div class="mbox">
+        <h3>Eliminar artigo</h3>
+        <p>Esta ação é permanente e não pode ser desfeita. O artigo será removido do rascunho local.</p>
+        <div class="mbtns">
+            <button class="bcanc" onclick="closeM()">Cancelar</button>
+            <button class="bdelc" id="bdelc">Eliminar</button>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL REJEIÇÃO COM COMENTÁRIO -->
+<div class="mover" id="mrej">
+    <div class="mbox" style="max-width:460px;">
+        <h3>Rejeitar artigo</h3>
+        <p style="margin-bottom:14px;">O autor receberá o motivo da rejeição na sua página de perfil. Seja claro e construtivo.</p>
+        <label style="font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.7px;color:#505050;display:block;margin-bottom:6px;">Motivo da rejeição *</label>
+        <textarea id="rej-comentario" style="width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:7px;font-size:.86rem;font-family:'Times New Roman',Times,serif;min-height:100px;resize:vertical;background:#fafafa;transition:.2s;" placeholder="Ex: O artigo precisa de mais fontes, a introdução está incompleta, o tema está fora do âmbito editorial..."></textarea>
+        <div id="rej-err" style="display:none;font-size:.76rem;color:#c62828;margin-top:6px;"></div>
+        <div class="mbtns" style="margin-top:16px;">
+            <button class="bcanc" onclick="closeRej()">Cancelar</button>
+            <button class="bdelc" id="brejc" style="background:#e65100;">Confirmar Rejeição</button>
+        </div>
+    </div>
+</div>
+
+<!-- ════ GUARD ════ -->
+<div id="guard">
+    <div class="gbox">
+        <div class="glogo">Makhalelo</div>
+        <div class="gsub">Painel de Administração</div>
+        <div class="lang-sw">
+            <button class="lang-b" data-lang="pt">PT</button>
+            <button class="lang-b" data-lang="en">EN</button>
+            <button class="lang-b" data-lang="es">ES</button>
+            <button class="lang-b" data-lang="fr">FR</button>
+        </div>
+        <div id="gerr" class="gerr"></div>
+        <input type="text"     id="gu" class="fi" placeholder="Utilizador" autocomplete="username">
+        <div class="ig">
+            <input type="password" id="gp" class="fi" placeholder="Senha" autocomplete="current-password">
+            <button class="itg" onclick="tv('gp',this)">&#128065;</button>
+        </div>
+        <button class="bg" id="bgb" onclick="guardLogin()">
+            <span id="bgt">Entrar</span>
+            <span id="bgs" style="width:13px;height:13px;border:2px solid rgba(255,255,255,.35);border-top-color:white;border-radius:50%;animation:spin .7s linear infinite;display:none;flex-shrink:0;"></span>
+        </button>
+        <a href="InitPage.html" style="display:block;margin-top:13px;font-size:.74rem;color:#bbb;text-align:center;">Voltar ao site</a>
+    </div>
+</div>
+
+<!-- ════ PAINEL ════ -->
+<div id="painel">
+<div class="lay">
+    <aside class="sb">
+        <div class="sb-brand">
+            <div class="sb-brand-name">Makhalelo</div>
+            <div class="sb-brand-role">Admin</div>
+        </div>
+        <nav class="sb-nav">
+            <div class="sbi active" data-tab="geral"   onclick="setTab(this)"><span class="sbi-mark"></span>Visão Geral</div>
+            <div class="sbi"        data-tab="editor"  onclick="setTab(this)"><span class="sbi-mark"></span>Novo Artigo</div>
+            <div class="sbi"        data-tab="posts"   onclick="setTab(this)"><span class="sbi-mark"></span>Gerir Artigos</div>
+            <div class="sb-sep"></div>
+            <div class="sbi"        data-tab="tags"    onclick="setTab(this)"><span class="sbi-mark"></span>Gerir Tags</div>
+            <div class="sbi"        data-tab="pendentes" onclick="setTab(this)"><span class="sbi-mark"></span>Pendentes <span id="pend-badge" style="display:none;background:#c62828;color:white;border-radius:50px;padding:1px 6px;font-size:.62rem;font-weight:700;margin-left:4px;"></span></div>
+            <div class="sbi"        data-tab="trafico" onclick="setTab(this)"><span class="sbi-mark"></span>Tráfego</div>
+        </nav>
+        <div class="sb-foot">
+            <span class="sb-name" id="anome">—</span>
+            <span class="sb-role">Administrador</span>
+            <span class="sb-exit" onclick="sair()">Sair</span>
+        </div>
+    </aside>
+
+    <main class="pc">
+
+        <!-- VISÃO GERAL -->
+        <div id="tab-geral">
+            <div class="ph"><h1>Visão Geral</h1><span class="badge-adm">ADM</span></div>
+            <div class="sg" id="sg"></div>
+            <div class="pcard">
+                <div class="pcard-h">Publicados recentemente</div>
+                <div id="prec"></div>
+            </div>
+        </div>
+
+        <!-- EDITOR -->
+        <div id="tab-editor" style="display:none;">
+            <div class="ph">
+                <h1 id="etit">Novo Artigo</h1>
+                <button class="bm" onclick="salvar()">Guardar Artigo</button>
+            </div>
+            <div class="pcard">
+                <input type="hidden" id="pid">
+
+                <label class="fl">Título *</label>
+                <input type="text" id="ptitle" class="fip" placeholder="Título do artigo...">
+
+                <div class="frow" style="margin-top:2px;">
+                    <div>
+                        <label class="fl">Categoria *</label>
+                        <select id="pcat" class="fip fsel"><option value="">Selecionar...</option></select>
+                    </div>
+                    <div>
+                        <label class="fl">Status</label>
+                        <select id="pstatus" class="fip fsel">
+                            <option value="published">Publicado</option>
+                            <option value="draft">Rascunho</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="frow">
+                    <div>
+                        <label class="fl">Autor</label>
+                        <input type="text" id="pautor" class="fip" placeholder="Nome do autor">
+                    </div>
+                    <div>
+                        <label class="fl">Tags (IDs por vírgula)</label>
+                        <input type="text" id="ptags" class="fip" placeholder="politica, cultura">
+                    </div>
+                </div>
+
+                <label class="fl">Imagem de Capa</label>
+                <div class="idrop" onclick="document.getElementById('pimg').click()" id="idarea">
+                    <div id="idtxt">
+                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#ccc" stroke-width="1.5" style="margin:0 auto 6px;display:block;"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                        <div class="idrop-title">Clique para selecionar uma imagem</div>
+                        <div class="idrop-sub">JPG, PNG — máx. 2MB</div>
+                    </div>
+                    <img id="cprev" class="cprev" alt="Capa">
+                </div>
+                <input type="file" id="pimg" accept="image/*" style="display:none;" onchange="prevCapa(this)">
+
+                <label class="fl">Legenda da Imagem</label>
+                <input type="text" id="plegenda" class="fip" placeholder="Créditos ou descrição da imagem...">
+
+                <label class="fl">Resumo *</label>
+                <textarea id="pexcerpt" class="fip fta" placeholder="Resumo atrativo do artigo (2–3 frases)..."></textarea>
+
+                <label class="fl">Conteúdo *</label>
+                <div class="tb">
+                    <button class="tbb" onclick="fmt('bold')"><b>B</b></button>
+                    <button class="tbb" onclick="fmt('italic')"><i>I</i></button>
+                    <button class="tbb" onclick="fmt('underline')"><u>U</u></button>
+                    <button class="tbb" onclick="fmt('formatBlock','h2')">H2</button>
+                    <button class="tbb" onclick="fmt('formatBlock','h3')">H3</button>
+                    <button class="tbb" onclick="fmt('formatBlock','blockquote')">Cit.</button>
+                    <button class="tbb" onclick="fmt('insertUnorderedList')">Lista</button>
+                    <button class="tbb" onclick="fmt('insertOrderedList')">Num.</button>
+                    <button class="tbb" onclick="lnk()">Link</button>
+                    <button class="tbb" onclick="fmt('removeFormat')">Limpar</button>
+                </div>
+                <div id="pcont" class="rea" contenteditable="true"></div>
+
+                <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:.78rem;font-weight:600;margin-top:15px;color:#444;">
+                    <input type="checkbox" id="pfeat" style="width:14px;height:14px;accent-color:var(--green);">
+                    Definir como artigo em destaque
+                </label>
+            </div>
+        </div>
+
+        <!-- GERIR ARTIGOS -->
+        <div id="tab-posts" style="display:none;">
+            <div class="ph"><h1>Artigos</h1><button class="bm" onclick="novoPost()">+ Novo Artigo</button></div>
+            <div class="search-bar">
+                <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+                <input type="text" placeholder="Pesquisar por título ou categoria..." oninput="renderPosts(this.value)">
+            </div>
+            <div id="pfull"></div>
+        </div>
+
+        <!-- GERIR TAGS -->
+        <div id="tab-tags" style="display:none;">
+            <div class="ph"><h1>Tags</h1></div>
+            <div class="pcard" style="padding:0;overflow:hidden;">
+                <div style="padding:16px 20px;border-bottom:1px solid var(--border);">
+                    <div class="pcard-h" style="margin-bottom:0;padding-bottom:0;border:none;">Tags activas</div>
+                </div>
+                <div class="tags-tbl">
+                    <div class="tags-tbl-head">
+                        <div class="tags-tbl-hcell"></div>
+                        <div class="tags-tbl-hcell">Rótulo</div>
+                        <div class="tags-tbl-hcell">ID</div>
+                        <div class="tags-tbl-hcell"></div>
+                    </div>
+                    <div id="tags-list"></div>
+                </div>
+                <div class="add-tag-area">
+                    <div style="flex:1;min-width:100px;">
+                        <label class="fl" style="margin-top:0;">ID</label>
+                        <input type="text" id="ntid" class="fip" placeholder="ex: desporto">
+                    </div>
+                    <div style="flex:1.4;min-width:110px;">
+                        <label class="fl" style="margin-top:0;">Rótulo</label>
+                        <input type="text" id="ntlbl" class="fip" placeholder="ex: Desporto">
+                    </div>
+                    <div>
+                        <label class="fl" style="margin-top:0;">Cor</label>
+                        <input type="color" id="ntcor" class="fip" style="height:39px;padding:3px;cursor:pointer;" value="#015334">
+                    </div>
+                    <button class="bm" onclick="addTag()" style="align-self:flex-end;white-space:nowrap;">Adicionar</button>
+                </div>
+            </div>
+            <div class="pcard" style="margin-top:0;">
+                <div class="pcard-h">Como usar</div>
+                <p style="font-size:.82rem;color:var(--gray);line-height:1.75;">No editor, insira os IDs das tags no campo <strong style="color:var(--dark)">Tags</strong>, separados por vírgula. Por exemplo: <code style="background:#f4f4f2;padding:2px 7px;border-radius:4px;font-size:.78rem;">politica, sociedade</code>. As tags aparecem automaticamente na barra de filtro da página inicial.</p>
+            </div>
+        </div>
+
+        <!-- TRÁFEGO -->
+        <div id="tab-trafico" style="display:none;">
+            <div class="ph"><h1>Gestão de Tráfego</h1></div>
+
+            <div class="trf-coming">
+                <div>
+                    <h3>Módulo de análise em desenvolvimento</h3>
+                    <p>Em breve será possível acompanhar visualizações, fontes de tráfego, artigos mais lidos e comportamento dos leitores em tempo real.</p>
+                </div>
+                <span class="trf-pill">Em breve</span>
+            </div>
+
+            <div class="trf-grid">
+                <div class="trf-card"><div class="trf-num">—</div><div class="trf-lbl">Visualizações totais</div><div class="trf-note">A aguardar integração</div></div>
+                <div class="trf-card"><div class="trf-num">—</div><div class="trf-lbl">Leitores únicos</div><div class="trf-note">A aguardar integração</div></div>
+                <div class="trf-card"><div class="trf-num">—</div><div class="trf-lbl">Tempo médio de leitura</div><div class="trf-note">A aguardar integração</div></div>
+                <div class="trf-card"><div class="trf-num">—</div><div class="trf-lbl">Artigo mais lido</div><div class="trf-note">A aguardar integração</div></div>
+                <div class="trf-card"><div class="trf-num">—</div><div class="trf-lbl">Partilhas</div><div class="trf-note">A aguardar integração</div></div>
+                <div class="trf-card"><div class="trf-num">—</div><div class="trf-lbl">Taxa de retorno</div><div class="trf-note">A aguardar integração</div></div>
+            </div>
+
+            <div class="chart-ph">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#d0d0d0" stroke-width="1.5"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+                <span class="chart-ph-label">O gráfico de visualizações aparecerá aqui</span>
+            </div>
+
+            <div class="pcard">
+                <div class="pcard-h">Fontes de tráfego previstas</div>
+                <div class="trf-sources">
+                    <div class="trf-src">
+                        <div class="trf-src-name">Orgânico</div>
+                        <div class="trf-src-desc">Google, Bing e outros motores de pesquisa</div>
+                    </div>
+                    <div class="trf-src">
+                        <div class="trf-src-name">Redes Sociais</div>
+                        <div class="trf-src-desc">Facebook, WhatsApp, Twitter / X</div>
+                    </div>
+                    <div class="trf-src">
+                        <div class="trf-src-name">Directo</div>
+                        <div class="trf-src-desc">Acessos directos via URL ou favoritos</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- PENDENTES -->
+        <div id="tab-pendentes" style="display:none;">
+            <div class="ph"><h1>Artigos Pendentes</h1></div>
+            <div id="pend-list"></div>
+        </div>
+
+    </main>
+</div>
+</div>
+
+<script src="ACore.js"></script>
+<script src="Recordum.js"></script>
+<script>
+/* ── BOOT ── */
+(function(){ if(Auth.isAdmin()) show(); })();
+document.addEventListener('keydown', e => {
+    if(e.key==='Enter' && document.getElementById('guard').style.display!=='none') guardLogin();
+});
+
+async function guardLogin() {
+    const u=document.getElementById('gu').value.trim(), p=document.getElementById('gp').value;
+    if(!u||!p){ ge('Preencha todos os campos.'); return; }
+    document.getElementById('bgb').disabled=true;
+    document.getElementById('bgt').style.display='none';
+    document.getElementById('bgs').style.display='inline-block';
+    try {
+        if(await Auth.tryAdminLogin(u,p)) show(); else ge('Credenciais inválidas.');
+    } finally {
+        document.getElementById('bgb').disabled=false;
+        document.getElementById('bgt').style.display='';
+        document.getElementById('bgs').style.display='none';
+    }
+}
+function ge(m){ const e=document.getElementById('gerr'); e.textContent=m; e.classList.add('show'); }
+function show() {
+    document.getElementById('guard').style.display='none';
+    document.getElementById('painel').style.display='block';
+    const s=Auth.getSessao();
+    document.getElementById('anome').textContent=s?s.name:'Admin';
+    popularCat(); renderDash();
+    /* Actualiza badge de pendentes no sidebar imediatamente */
+    _updatePendBadge();
+}
+function sair(){ Auth.logout(); window.location.href='InitPage.html'; }
+
+/* ── TABS ── */
+function setTab(el) {
+    document.querySelectorAll('.sbi').forEach(i=>i.classList.remove('active'));
+    el.classList.add('active');
+    const t=el.dataset.tab;
+    ['geral','editor','posts','tags','trafico','pendentes'].forEach(x=>document.getElementById('tab-'+x).style.display='none');
+    document.getElementById('tab-'+t).style.display='block';
+    if(t==='posts')   renderPosts();
+    if(t==='geral')   renderDash();
+    if(t==='tags')    renderTags();
+    if(t==='pendentes') renderPendentes();
+}
+function novoPost(){ limpar(); setTab(document.querySelector('[data-tab="editor"]')); }
+
+/* ── DASHBOARD ── */
+function renderDash(){
+    const s=Recordum.stats();
+    document.getElementById('sg').innerHTML=`
+        <div class="sc"><div class="sc-num">${s.total}</div><div class="sc-lbl">Total</div></div>
+        <div class="sc"><div class="sc-num">${s.published}</div><div class="sc-lbl">Publicados</div></div>
+        <div class="sc"><div class="sc-num">${s.draft}</div><div class="sc-lbl">Rascunhos</div></div>
+        <div class="sc"><div class="sc-num">${s.cats}</div><div class="sc-lbl">Categorias</div></div>`;
+    const lista=Recordum.listar().slice(0,5);
+    const el=document.getElementById('prec');
+    if(!lista.length){
+        el.innerHTML='<div class="empty"><strong>Nenhum artigo ainda</strong><a href="#" onclick="novoPost()" style="color:var(--green);font-weight:700;font-size:.82rem;">Criar o primeiro artigo</a></div>';
+        return;
+    }
+    el.innerHTML=buildList(lista);
+}
+
+/* ── ARTIGOS ── */
+function renderPosts(q=''){
+    const lista=q?Recordum.buscar(q):Recordum.listar();
+    const el=document.getElementById('pfull');
+    if(!lista.length){
+        el.innerHTML=`<div class="empty">
+            <strong>${q?'Nenhum resultado para "'+q+'"':'Ainda não há artigos publicados'}</strong>
+            ${!q?'<span style="font-size:.82rem;">Quando aprovar artigos da aba <strong>Pendentes</strong>, eles aparecerão aqui.</span>':''}
+        </div>`;
+        return;
+    }
+    el.innerHTML=buildList(lista);
+}
+
+function buildList(lista){
+    const tags=Recordum.getTags();
+    const head=`<div class="pl">
+        <div class="pl-head">
+            <div class="pl-hcell">Título</div>
+            <div class="pl-hcell">Categoria</div>
+            <div class="pl-hcell">Autor</div>
+            <div class="pl-hcell">Status</div>
+            <div class="pl-hcell"></div>
+        </div>`;
+    const rows=lista.map(p=>{
+        const tag=tags.find(t=>t.id===p.category), cor=tag?tag.cor:'#888';
+        const statusTxt=p.status==='published'?'Publicado':'Rascunho';
+        const statusClr=p.status==='published'?'#2e7d32':'#e65100';
+        return `<div class="pr">
+            <div class="pr-title" title="${p.title||''}">${p.title||'(sem título)'}</div>
+            <div class="pr-cat"><span class="prtag" style="background:${cor}">${tag?tag.label:p.category||'—'}</span></div>
+            <div class="pr-autor">${p.autor||'—'}</div>
+            <div class="pr-status" style="color:${statusClr}">${statusTxt}</div>
+            <div class="pr-actions">
+                <button class="prb" onclick="editar('${p.id}')">Editar</button>
+                <button class="prb del" onclick="confDel('${p.id}')">Eliminar</button>
+            </div>
+        </div>`;
+    }).join('');
+    return head+rows+'</div>';
+}
+
+/* ── TAGS ── */
+function renderTags(){
+    const tags=Recordum.getTags(), el=document.getElementById('tags-list');
+    if(!tags.length){
+        el.innerHTML='<div style="padding:16px 18px;font-size:.82rem;color:var(--gray);">Nenhuma tag configurada.</div>';
+        return;
+    }
+    el.innerHTML=tags.map(t=>`
+        <div class="tag-row">
+            <div><div class="tag-dot" style="background:${t.cor}"></div></div>
+            <div class="tag-name">${t.label}</div>
+            <div><span class="tag-code">${t.id}</span></div>
+            <div><button class="tag-rm" onclick="delTag('${t.id}')">Remover</button></div>
+        </div>`).join('');
+}
+function addTag(){
+    const id=document.getElementById('ntid').value.trim().toLowerCase().replace(/\s+/g,'');
+    const lbl=document.getElementById('ntlbl').value.trim();
+    const cor=document.getElementById('ntcor').value;
+    if(!id||!lbl){ toast('Preencha o ID e o rótulo.','err'); return; }
+    Recordum.addTag({id,label:lbl,cor});
+    document.getElementById('ntid').value=''; document.getElementById('ntlbl').value='';
+    renderTags(); popularCat(); toast('Tag adicionada.','ok');
+}
+function delTag(id){ Recordum.removeTag(id); renderTags(); popularCat(); toast('Tag removida.','inf'); }
+function popularCat(){
+    const sel=document.getElementById('pcat'),cur=sel.value;
+    sel.innerHTML='<option value="">Selecionar...</option>';
+    Recordum.getTags().forEach(t=>{ const o=document.createElement('option'); o.value=t.id; o.textContent=t.label; sel.appendChild(o); });
+    if(cur) sel.value=cur;
+}
+
+/* ── EDITOR ── */
+function fmt(cmd,v){ document.getElementById('pcont').focus(); v!==undefined?document.execCommand(cmd,false,v):document.execCommand(cmd,false,null); }
+function lnk(){ const u=prompt('URL do link:'); if(u) fmt('createLink',u); }
+function prevCapa(inp){
+    if(inp.files&&inp.files[0]){
+        const r=new FileReader();
+        r.onload=e=>{ document.getElementById('cprev').src=e.target.result; document.getElementById('cprev').style.display='block'; document.getElementById('idtxt').style.display='none'; };
+        r.readAsDataURL(inp.files[0]);
+    }
+}
+function limpar(){
+    ['pid','ptitle','pautor','ptags','pexcerpt','plegenda'].forEach(id=>document.getElementById(id).value='');
+    document.getElementById('pcat').value=''; document.getElementById('pstatus').value='published';
+    document.getElementById('pfeat').checked=false; document.getElementById('pcont').innerHTML='';
+    document.getElementById('cprev').style.display='none'; document.getElementById('idtxt').style.display='block';
+    document.getElementById('etit').textContent='Novo Artigo';
+}
+function editar(id){
+    const p=Recordum.listar().find(x=>x.id===id); if(!p) return; limpar();
+    document.getElementById('pid').value=p.id;
+    document.getElementById('ptitle').value=p.title||'';
+    document.getElementById('pcat').value=p.category||'';
+    document.getElementById('pstatus').value=p.status||'published';
+    document.getElementById('pautor').value=p.autor||'';
+    document.getElementById('ptags').value=(p.tags||[]).join(', ');
+    document.getElementById('pexcerpt').value=p.excerpt||'';
+    document.getElementById('plegenda').value=p.legenda||'';
+    document.getElementById('pfeat').checked=!!p.featured;
+    document.getElementById('pcont').innerHTML=p.content||'';
+    document.getElementById('etit').textContent='Editar Artigo';
+    if(p.image){ document.getElementById('cprev').src=p.image; document.getElementById('cprev').style.display='block'; document.getElementById('idtxt').style.display='none'; }
+    setTab(document.querySelector('[data-tab="editor"]'));
+}
+function salvar(){
+    const title=document.getElementById('ptitle').value.trim();
+    const cat  =document.getElementById('pcat').value;
+    const exc  =document.getElementById('pexcerpt').value.trim();
+    const cont =document.getElementById('pcont').innerHTML.trim();
+    if(!title){ toast('O título é obrigatório.','err'); return; }
+    if(!cat)  { toast('Selecione uma categoria.','err'); return; }
+    if(!exc)  { toast('O resumo é obrigatório.','err'); return; }
+    if(!cont||cont==='<br>'){ toast('O conteúdo está vazio.','err'); return; }
+    const tags=document.getElementById('ptags').value.split(',').map(t=>t.trim()).filter(Boolean);
+    const cprev=document.getElementById('cprev');
+    const imgData=cprev.style.display!=='none'&&cprev.src.startsWith('data:')?cprev.src:null;
+    Recordum.salvar({
+        id:document.getElementById('pid').value||undefined,
+        title, category:cat, excerpt:exc, content:cont, tags,
+        autor:document.getElementById('pautor').value.trim()||'Equipa Makhalelo',
+        status:document.getElementById('pstatus').value,
+        featured:document.getElementById('pfeat').checked,
+        legenda:document.getElementById('plegenda').value.trim()||null,
+        image:imgData
+    });
+    toast('Artigo guardado com sucesso.','ok');
+    limpar();
+    setTimeout(()=>setTab(document.querySelector('[data-tab="posts"]')),650);
+}
+
+/* ── DELETE ── */
+let _di=null;
+function confDel(id){
+    _di=id;
+    document.getElementById('mdel').classList.add('open');
+    document.getElementById('bdelc').onclick=()=>{ Recordum.remover(_di); closeM(); renderPosts(); renderDash(); toast('Artigo eliminado.','inf'); };
+}
+function closeM(){ document.getElementById('mdel').classList.remove('open'); _di=null; }
+
+/* ── UTILS ── */
+function tv(id,btn){ const i=document.getElementById(id),v=i.type==='password'; i.type=v?'text':'password'; btn.textContent=v?'🙈':'👁'; }
+function toast(msg,t='inf'){ const e=document.getElementById('toast'); e.textContent=msg; e.className=`toast ${t} show`; setTimeout(()=>e.classList.remove('show'),3000); }
+
+document.querySelectorAll('.lang-b').forEach(b=>{
+    b.addEventListener('click',()=>{
+        localStorage.setItem('mk_lang',b.dataset.lang);
+        document.querySelectorAll('.lang-b').forEach(x=>x.classList.toggle('active',x.dataset.lang===b.dataset.lang));
+    });
+    b.classList.toggle('active',b.dataset.lang===(localStorage.getItem('mk_lang')||'pt'));
+});
+
+/* ── BADGE PENDENTES (chamado no init e em cada actualização) ── */
+function _updatePendBadge(){
+    const lista   = JSON.parse(localStorage.getItem('mk_pending')||'[]');
+    const pending = lista.filter(p=>p.status==='pending');
+    const badge   = document.getElementById('pend-badge');
+    if(!badge) return;
+    if(pending.length){ badge.textContent=pending.length; badge.style.display='inline'; }
+    else badge.style.display='none';
+}
+
+/* ── PENDENTES ── */
+function renderPendentes(){
+    const lista = JSON.parse(localStorage.getItem('mk_pending')||'[]');
+    const el    = document.getElementById('pend-list');
+    _updatePendBadge();
+
+    if(!lista.length){
+        el.innerHTML='<div class="empty"><strong>Nenhum artigo pendente</strong><span style="font-size:.82rem;">Quando utilizadores submeterem artigos, aparecerão aqui para revisão.</span></div>';
+        return;
+    }
+
+    el.innerHTML = lista.map((p,i) => {
+        const cor = p.status==='pending'?'#e65100':p.status==='approved'?'#2e7d32':'#c62828';
+        const txt = p.status==='pending'?'Pendente':p.status==='approved'?'Aprovado':'Rejeitado';
+        const dt  = p.criadoEm ? new Date(p.criadoEm).toLocaleDateString('pt-PT',{day:'2-digit',month:'short',year:'numeric'}) : '';
+        return `<div class="pcard" style="margin-bottom:14px;">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap;">
+                <div style="flex:1;min-width:0;">
+                    <div style="font-family:var(--fh);font-size:.92rem;font-weight:700;margin-bottom:5px;">${p.title||'(sem título)'}</div>
+                    <div style="font-size:.75rem;color:var(--gray);display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
+                        <span>Por <strong>${p.autor||'—'}</strong></span>
+                        <span>${p.autorEmail||''}</span>
+                        <span>${dt}</span>
+                        <span style="color:${cor};font-weight:700;">${txt}</span>
+                    </div>
+                    ${p.nota?`<div style="font-size:.78rem;color:#888;margin-top:7px;background:#fafafa;padding:7px 10px;border-radius:5px;border-left:2px solid #e5e7eb;font-style:italic;">"${p.nota}"</div>`:''}
+                </div>
+                <div style="display:flex;gap:7px;flex-shrink:0;">
+                    <button class="prb" onclick="previewPend(${i})" title="Ver artigo">Ver</button>
+                    ${p.status==='pending'?`
+                    <button class="prb" style="border-color:#4caf50;color:#2e7d32;" onclick="aprovaPend(${i})" title="Aprovar e publicar">Aprovar</button>
+                    <button class="prb del" onclick="rejeitaPend(${i})" title="Rejeitar">Rejeitar</button>
+                    `:''}
+                    <button class="prb del" onclick="removePend(${i})" title="Eliminar da fila">Eliminar</button>
+                </div>
+            </div>
+            ${p.excerpt?`<p style="font-size:.82rem;color:var(--gray);margin-top:12px;line-height:1.65;border-top:1px solid var(--border);padding-top:11px;">${p.excerpt}</p>`:''}
+            ${p.motivoRejeicao?`<div style="margin-top:10px;background:#fff5f5;border:1px solid #ffcdd2;border-radius:7px;padding:10px 13px;font-size:.8rem;color:#b71c1c;line-height:1.55;"><strong style="font-size:.7rem;text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:3px;color:#c62828;">Feedback ao autor</strong>${p.motivoRejeicao}</div>`:''}
+        </div>`;
+    }).join('');
+}
+
+function previewPend(i){
+    const p = JSON.parse(localStorage.getItem('mk_pending')||'[]')[i];
+    if(!p) return;
+    const w = window.open('','_blank');
+    w.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Preview: ${p.title}</title>
+        <style>body{font-family:'Times New Roman',serif;max-width:700px;margin:40px auto;padding:0 20px;line-height:1.85;color:#222;}
+        h1{font-size:2rem;margin-bottom:10px;}h2{font-size:1.3rem;margin:1.8em 0 .6em;border-left:4px solid #015334;padding-left:12px;}
+        blockquote{border-left:4px solid #015334;padding:10px 18px;background:#f5faf5;margin:1em 0;font-style:italic;}
+        .meta{font-size:.82rem;color:#888;margin-bottom:28px;padding-bottom:14px;border-bottom:1px solid #eee;}
+        .badge{background:#e65100;color:white;padding:3px 9px;border-radius:4px;font-size:.68rem;font-weight:700;}</style>
+        </head><body>
+        <span class="badge">REVISÃO — NÃO PUBLICADO</span>
+        <h1>${p.title}</h1>
+        <div class="meta">Por <strong>${p.autor}</strong> &nbsp;|&nbsp; Categoria: ${p.category}</div>
+        ${p.content||'<p>'+p.excerpt+'</p>'}</body></html>`);
+    w.document.close();
+}
+
+function aprovaPend(i){
+    const lista = JSON.parse(localStorage.getItem('mk_pending')||'[]');
+    const p = lista[i];
+    if(!p) return;
+    if(!confirm('Publicar "'+p.title.substring(0,50)+'..."?')) return;
+    /* Move para posts publicados */
+    Recordum.salvar({
+        id: p.id.replace('pend_','post_pend_'),
+        title:    p.title,
+        category: p.category,
+        tags:     p.tags||[],
+        excerpt:  p.excerpt,
+        content:  p.content,
+        legenda:  p.legenda||null,
+        image:    p.image||null,
+        autor:    p.autor,
+        status:   'published',
+        featured: false,
+        criadoEm: p.criadoEm
+    });
+    lista[i].status = 'approved';
+    localStorage.setItem('mk_pending', JSON.stringify(lista));
+    renderPendentes();
+    renderDash();
+    toast('Artigo publicado com sucesso.','ok');
+}
+
+let _ri = null;
+function rejeitaPend(i){
+    _ri = i;
+    document.getElementById('rej-comentario').value = '';
+    document.getElementById('rej-err').style.display = 'none';
+    document.getElementById('mrej').classList.add('open');
+    document.getElementById('brejc').onclick = () => {
+        const mot = document.getElementById('rej-comentario').value.trim();
+        if(!mot){
+            document.getElementById('rej-err').textContent = 'Escreva o motivo da rejeição.';
+            document.getElementById('rej-err').style.display = 'block';
+            return;
+        }
+        const lista = JSON.parse(localStorage.getItem('mk_pending')||'[]');
+        if(!lista[_ri]) { closeRej(); return; }
+        lista[_ri].status = 'rejected';
+        lista[_ri].motivoRejeicao = mot;
+        lista[_ri].rejeitadoEm = new Date().toISOString();
+        localStorage.setItem('mk_pending', JSON.stringify(lista));
+        closeRej();
+        renderPendentes();
+        toast('Artigo rejeitado com comentário.','inf');
+    };
+}
+function closeRej(){ document.getElementById('mrej').classList.remove('open'); _ri = null; }
+
+function removePend(i){
+    const lista = JSON.parse(localStorage.getItem('mk_pending')||'[]');
+    lista.splice(i,1);
+    localStorage.setItem('mk_pending', JSON.stringify(lista));
+    renderPendentes();
+    toast('Removido da fila.','inf');
+}
+
+</script>
+</body>
+</html>

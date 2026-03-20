@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="pt-mz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Entrar | Makhalelo</title>
+    <link rel="stylesheet" href="FrontEndLogic/Styles/Base.min.css">
+    <link rel="stylesheet" href="FrontEndLogic/Styles/anims.min.css">
+    <style>
+        .pass-rules{background:#f9f9f7;border:1px solid #e8e8e4;border-radius:7px;
+            padding:11px 14px;margin-bottom:12px;display:none;}
+        .pass-rules.show{display:block;}
+        .pass-rules ul{list-style:none;display:flex;flex-direction:column;gap:5px;}
+        .pass-rules li{font-size:.76rem;display:flex;align-items:center;gap:7px;color:#999;transition:.2s;}
+        .pass-rules li::before{content:'○';font-size:.62rem;flex-shrink:0;}
+        .pass-rules li.ok{color:#2e7d32;} .pass-rules li.ok::before{content:'●';color:#4caf50;}
+        .pass-rules li.fail{color:#c62828;} .pass-rules li.fail::before{content:'●';color:#ef5350;}
+        .fi-ok{border-color:#4caf50!important;}
+        .fi-err{border-color:#ef5350!important;}
+        .fi-hint{font-size:.72rem;margin:-9px 0 11px;padding-left:2px;display:block;}
+    </style>
+</head>
+<body>
+
+<div id="toast" class="toast"></div>
+
+<div style="position:fixed;top:16px;right:20px;z-index:999;">
+    <div class="lang-switcher">
+        <button class="lang-btn" data-lang="pt">PT</button>
+        <button class="lang-btn" data-lang="en">EN</button>
+        <button class="lang-btn" data-lang="es">ES</button>
+        <button class="lang-btn" data-lang="fr">FR</button>
+    </div>
+</div>
+
+<div class="login-wrapper">
+    <!-- VISUAL -->
+    <div class="login-visual fade-in">
+        <div class="visual-content">
+            <h1 style="font-family:'Times New Roman',Times,serif;font-size:2.4rem;margin-bottom:18px;font-weight:700;line-height:1.18;" data-i18n="visual_h1">
+                Faça parte da conversa.
+            </h1>
+            <p style="font-size:1rem;opacity:.85;font-family:'Times New Roman',Times,serif;line-height:1.8;" data-i18n="visual_p">
+                "A cultura é a arma mais poderosa para libertar a mente."
+            </p>
+        </div>
+    </div>
+
+    <!-- FORM -->
+    <div class="login-form-container fade-in delay-1">
+        <div class="form-box">
+            <a href="InitPage.html" style="font-family:'Times New Roman',Times,serif;font-weight:700;color:var(--c-green);font-size:1rem;display:block;margin-bottom:30px;">&larr; Makhalelo</a>
+
+            <div style="margin-bottom:26px;text-align:center;">
+                <h2 id="page-title" style="font-family:'Times New Roman',Times,serif;font-size:1.85rem;margin-bottom:7px;font-weight:700;">Bem-vindo de volta</h2>
+                <p id="page-subtitle" style="color:#777;font-size:.9rem;">Insira seus dados para acessar.</p>
+            </div>
+
+            <!-- LOGIN -->
+            <form id="form-login" onsubmit="handleLogin(event)" autocomplete="on" novalidate>
+                <div id="login-error" class="form-error"></div>
+                <div id="login-success" class="form-success"></div>
+
+                <input type="text" id="l-user" class="input-fancy"
+                    placeholder="Nome de utilizador"
+                    autocomplete="username" maxlength="80" spellcheck="false">
+                <div class="input-group">
+                    <input type="password" id="l-pass" class="input-fancy"
+                        placeholder="Senha"
+                        autocomplete="current-password" maxlength="128">
+                    <button type="button" class="input-toggle" onclick="tv('l-pass',this)" tabindex="-1">&#128065;</button>
+                </div>
+
+                <button type="submit" class="btn-submit-full" id="btn-login">
+                    <span class="btn-txt">Entrar</span>
+                    <span class="spinner"></span>
+                </button>
+                <p style="text-align:center;margin-top:18px;font-size:.88rem;">
+                    Não tem conta?
+                    <a href="#" onclick="toggleForm('register')" style="color:var(--c-green);font-weight:700;">Criar conta</a>
+                </p>
+            </form>
+
+            <!-- REGISTO -->
+            <form id="form-register" class="hide" onsubmit="handleRegister(event)" autocomplete="on" novalidate>
+                <div id="reg-error"   class="form-error"></div>
+                <div id="reg-success" class="form-success"></div>
+
+                <!-- FOTO -->
+                <label for="pic-input" class="upload-label">
+                    <div class="upload-circle">
+                        <span id="upload-icon" class="upload-placeholder">+</span>
+                        <img id="preview-img" style="display:none;width:100%;height:100%;object-fit:cover;border-radius:50%;" alt="">
+                    </div>
+                    <span class="upload-text">Adicionar foto (opcional)</span>
+                </label>
+                <input type="file" id="pic-input" accept="image/jpeg,image/png,image/webp" style="display:none;" onchange="prevPhoto(this)">
+
+                <!-- Nome -->
+                <input type="text" id="r-name" class="input-fancy"
+                    placeholder="Nome Completo *"
+                    autocomplete="name" maxlength="80" spellcheck="false"
+                    oninput="chkLen(this,3)">
+
+                <!-- Username -->
+                <input type="text" id="r-username" class="input-fancy"
+                    placeholder="Nome de utilizador * (ex: joao.maputo)"
+                    autocomplete="username" maxlength="40" spellcheck="false"
+                    oninput="chkUsername(this)">
+                <span class="fi-hint" id="un-hint" style="color:#999;"></span>
+
+                <!-- Senha -->
+                <div class="input-group">
+                    <input type="password" id="r-pass" class="input-fancy"
+                        placeholder="Senha *"
+                        autocomplete="new-password" maxlength="128"
+                        oninput="chkPass(this.value)" onfocus="document.getElementById('pass-rules').classList.add('show')">
+                    <button type="button" class="input-toggle" onclick="tv('r-pass',this)" tabindex="-1">&#128065;</button>
+                </div>
+                <div class="pass-rules" id="pass-rules">
+                    <ul>
+                        <li id="r-len">Mínimo de 8 caracteres</li>
+                        <li id="r-up">Pelo menos 1 letra maiúscula (A-Z)</li>
+                        <li id="r-low">Pelo menos 1 letra minúscula (a-z)</li>
+                        <li id="r-num">Pelo menos 1 número (0-9)</li>
+                        <li id="r-spec">Pelo menos 1 caractere especial (!@#$%...)</li>
+                    </ul>
+                </div>
+
+                <!-- Confirmar senha -->
+                <div class="input-group">
+                    <input type="password" id="r-pass2" class="input-fancy"
+                        placeholder="Confirmar senha *"
+                        autocomplete="new-password" maxlength="128"
+                        oninput="chkConfirm()">
+                    <button type="button" class="input-toggle" onclick="tv('r-pass2',this)" tabindex="-1">&#128065;</button>
+                </div>
+                <span class="fi-hint" id="pass2-hint"></span>
+
+                <!-- Termos -->
+                <label style="display:flex;align-items:flex-start;gap:9px;cursor:pointer;font-size:.82rem;color:#555;margin-bottom:16px;line-height:1.55;">
+                    <input type="checkbox" id="r-terms" style="width:15px;height:15px;accent-color:var(--c-green);flex-shrink:0;margin-top:2px;">
+                    Aceito os <a href="sobre.html" style="color:var(--c-green);font-weight:600;margin:0 3px;">termos de uso</a> da Makhalelo.
+                </label>
+
+                <button type="submit" class="btn-submit-full" id="btn-reg">
+                    <span class="btn-txt">Criar Conta</span>
+                    <span class="spinner"></span>
+                </button>
+                <p style="text-align:center;margin-top:18px;font-size:.88rem;">
+                    Já possui conta?
+                    <a href="#" onclick="toggleForm('login')" style="color:var(--c-green);font-weight:700;">Faça Login</a>
+                </p>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script src="ACore.js"></script>
+<script src="i18n.js"></script>
+<script>
+/* ── PROTEÇÃO LOCALSTORAGE ── */
+(function(){
+    const _set = localStorage.setItem.bind(localStorage);
+    const DANGER = /<script|javascript:|on\w+\s*=/gi;
+    /* Apenas keys com prefixo mk_ são permitidas */
+    Object.defineProperty(localStorage, 'setItem', {
+        value: function(k, v){
+            if(typeof v === 'string' && DANGER.test(v)) return; /* bloqueia inject */
+            _set(k, v);
+        },
+        writable: false, configurable: false
+    });
+})();
+
+function toggleForm(mode){
+    document.querySelectorAll('.form-error,.form-success').forEach(e=>e.classList.remove('show'));
+    const lF=document.getElementById('form-login'), rF=document.getElementById('form-register');
+    if(mode==='register'){
+        lF.classList.add('hide'); rF.classList.remove('hide');
+        document.getElementById('page-title').textContent='Criar conta';
+        document.getElementById('page-subtitle').textContent='Preencha os dados abaixo.';
+    } else {
+        rF.classList.add('hide'); lF.classList.remove('hide');
+        document.getElementById('page-title').textContent='Bem-vindo de volta';
+        document.getElementById('page-subtitle').textContent='Insira seus dados para acessar.';
+    }
+}
+
+function prevPhoto(inp){
+    if(!inp.files||!inp.files[0]) return;
+    if(inp.files[0].size > 2*1024*1024){ showMsg('reg-error','Imagem demasiado grande (máx. 2MB).'); inp.value=''; return; }
+    const r=new FileReader();
+    r.onload=e=>{
+        document.getElementById('preview-img').src=e.target.result;
+        document.getElementById('preview-img').style.display='block';
+        document.getElementById('upload-icon').style.display='none';
+    };
+    r.readAsDataURL(inp.files[0]);
+}
+
+function tv(id,btn){ const i=document.getElementById(id),v=i.type==='password'; i.type=v?'text':'password'; btn.textContent=v?'🙈':'👁'; }
+
+/* ── VALIDAÇÕES EM TEMPO REAL ── */
+function chkLen(inp, min){
+    const v=inp.value.trim();
+    inp.classList.toggle('fi-ok', v.length>=min);
+    inp.classList.toggle('fi-err', v.length>0&&v.length<min);
+}
+
+function chkUsername(inp){
+    const v=inp.value.trim().toLowerCase();
+    const hint=document.getElementById('un-hint');
+    inp.classList.remove('fi-ok','fi-err'); hint.textContent='';
+    if(!v) return;
+    if(v.length<3){ inp.classList.add('fi-err'); hint.style.color='#c62828'; hint.textContent='Mínimo 3 caracteres'; return; }
+    if(!/^[a-z0-9_.]+$/.test(v)){ inp.classList.add('fi-err'); hint.style.color='#c62828'; hint.textContent='Apenas letras, números, ponto e _'; return; }
+    inp.classList.add('fi-ok'); hint.style.color='#2e7d32'; hint.textContent='@'+v;
+}
+
+function chkPass(p){
+    const rules=[
+        ['r-len',  p.length>=8],
+        ['r-up',   /[A-Z]/.test(p)],
+        ['r-low',  /[a-z]/.test(p)],
+        ['r-num',  /[0-9]/.test(p)],
+        ['r-spec', /[^A-Za-z0-9]/.test(p)]
+    ];
+    rules.forEach(([id,ok])=>{
+        const el=document.getElementById(id);
+        el.classList.toggle('ok',ok);
+        el.classList.toggle('fail',p.length>0&&!ok);
+    });
+    const allOk=rules.every(([,ok])=>ok);
+    const inp=document.getElementById('r-pass');
+    inp.classList.toggle('fi-ok',allOk&&p.length>0);
+    inp.classList.toggle('fi-err',!allOk&&p.length>0);
+    if(allOk) document.getElementById('pass-rules').classList.remove('show');
+    chkConfirm();
+}
+
+function chkConfirm(){
+    const p1=document.getElementById('r-pass').value;
+    const p2=document.getElementById('r-pass2').value;
+    const hint=document.getElementById('pass2-hint');
+    const inp=document.getElementById('r-pass2');
+    inp.classList.remove('fi-ok','fi-err'); hint.textContent='';
+    if(!p2) return;
+    if(p1===p2){ inp.classList.add('fi-ok'); hint.style.color='#2e7d32'; hint.textContent='As senhas coincidem'; }
+    else        { inp.classList.add('fi-err'); hint.style.color='#c62828'; hint.textContent='As senhas não coincidem'; }
+}
+
+function showMsg(id,msg){
+    document.querySelectorAll('.form-error,.form-success').forEach(e=>e.classList.remove('show'));
+    if(!msg) return;
+    const el=document.getElementById(id); el.textContent=msg; el.classList.add('show');
+    el.scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+function setLoad(id,on){ const b=document.getElementById(id); b.classList.toggle('loading',on); b.disabled=on; }
+const _sanitize = s => String(s||'').replace(/<[^>]*>/g,'').replace(/[<>"'`]/g,'').trim();
+
+/* ── LOGIN ── */
+async function handleLogin(e){
+    e.preventDefault();
+    const u=_sanitize(document.getElementById('l-user').value.trim());
+    const p=document.getElementById('l-pass').value;
+    if(!u||!p){ showMsg('login-error','Preencha todos os campos.'); return; }
+    setLoad('btn-login',true);
+    try {
+        const isAdm=await Auth.tryAdminLogin(u,p);
+        if(isAdm){
+            document.getElementById('login-success').textContent='Acesso autorizado. A redirecionar...';
+            document.getElementById('login-success').classList.add('show');
+            setTimeout(()=>window.location.href='panel.html',800);
+            return;
+        }
+        await Auth.loginUser(u,p);
+        document.getElementById('login-success').textContent='Login realizado. A redirecionar...';
+        document.getElementById('login-success').classList.add('show');
+        setTimeout(()=>{
+            const ret=new URLSearchParams(location.search).get('from');
+            window.location.href=ret?decodeURIComponent(ret):'InitPage.html';
+        },900);
+    } catch(_){
+        showMsg('login-error','Utilizador ou senha incorrectos.');
+    } finally { setLoad('btn-login',false); }
+}
+
+/* ── REGISTO ── */
+async function handleRegister(e){
+    e.preventDefault();
+    const name    =_sanitize(document.getElementById('r-name').value.trim());
+    const username=_sanitize(document.getElementById('r-username').value.trim().toLowerCase());
+    const pass    =document.getElementById('r-pass').value;
+    const pass2   =document.getElementById('r-pass2').value;
+    const terms   =document.getElementById('r-terms').checked;
+    const pic     =document.getElementById('preview-img');
+
+    if(!name||name.length<3)   { showMsg('reg-error','O nome deve ter pelo menos 3 caracteres.'); return; }
+    if(!username||username.length<3){ showMsg('reg-error','O nome de utilizador deve ter pelo menos 3 caracteres.'); return; }
+    if(!/^[a-z0-9_.]+$/.test(username)){ showMsg('reg-error','Nome de utilizador inválido. Use apenas letras, números, ponto ou underscore.'); return; }
+    if(pass!==pass2)           { showMsg('reg-error','As senhas não coincidem.'); return; }
+    if(!terms)                 { showMsg('reg-error','Aceite os termos de uso para continuar.'); return; }
+
+    setLoad('btn-reg',true);
+    try {
+        await Auth.registerUser({
+            name, username, password:pass,
+            photoData:(pic.style.display!=='none'&&pic.src.startsWith('data:'))?pic.src:null
+        });
+        document.getElementById('reg-success').textContent='Conta criada com sucesso! Pode fazer login agora.';
+        document.getElementById('reg-success').classList.add('show');
+        setTimeout(()=>toggleForm('login'),2000);
+    } catch(err){
+        if(err.message==='USERNAME_DUPLICADO') showMsg('reg-error','Este nome de utilizador já existe. Escolha outro.');
+        else showMsg('reg-error',err.message||'Erro ao criar a conta. Tente novamente.');
+    } finally { setLoad('btn-reg',false); }
+}
+
+/* Sanitização tempo real */
+document.querySelectorAll('.input-fancy').forEach(inp=>{
+    if(inp.type==='password') return;
+    inp.addEventListener('input',()=>{
+        if(/<script|javascript:|on\w+=/gi.test(inp.value))
+            inp.value=inp.value.replace(/<[^>]*>/g,'');
+    });
+});
+
+document.addEventListener('keydown',e=>{
+    if(e.key!=='Enter') return;
+    if(!document.getElementById('form-register').classList.contains('hide'))
+        handleRegister({preventDefault:()=>{}});
+    else handleLogin({preventDefault:()=>{}});
+});
+</script>
+</body>
+</html>
