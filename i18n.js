@@ -1,6 +1,6 @@
 /* ================================================================
    i18n.js — Makhalelo | PT / EN / ES / FR
-   ================================================================ */
+================================================================ */
 const i18n = (() => {
     const T = {
         pt: {
@@ -27,8 +27,8 @@ const i18n = (() => {
             sobre_kicker:'Sobre a Plataforma',sobre_h1a:'Análise crítica,',sobre_h1b:'desde dentro',sobre_h1c:'de Moçambique.',
             sobre_p:'Makhalelo é um espaço digital independente dedicado à publicação de artigos de opinião, análises e reflexões.',
             sobre_btn:'Publicar na Makhalelo',
-            dd_perfil:'Meu Perfil', dd_publicar:'Publicar Artigo',
-            nav_painel:'Painel Admin', nav_sair:'Sair',
+            dd_perfil:'Meu Perfil',dd_publicar:'Publicar Artigo',
+            nav_painel:'Painel Admin',nav_sair:'Sair',
         },
         en: {
             nav_sobre:'About Us',nav_entrar:'Sign In',
@@ -54,8 +54,10 @@ const i18n = (() => {
             sobre_kicker:'About the Platform',sobre_h1a:'Critical analysis,',sobre_h1b:'from within',sobre_h1c:'Mozambique.',
             sobre_p:'Makhalelo is an independent digital space dedicated to publishing opinion pieces, analyses and reflections.',
             sobre_btn:'Publish at Makhalelo',
-            dd_perfil:'My Profile', dd_publicar:'Publish Article',
-            nav_painel:'Admin Panel', nav_sair:'Sign Out',
+            dd_perfil:'My Profile',dd_publicar:'Publish Article',
+            nav_painel:'Admin Panel',nav_sair:'Sign Out',
+        },
+        es: {
             nav_sobre:'Sobre Nosotros',nav_entrar:'Entrar',
             hero_h1a:'Descubriendo Mozambique:',hero_h1b:'Pensamiento',hero_h1c:', Cultura y Política.',
             hero_p:'Una revista digital dedicada a narrativas auténticas y análisis crítico, celebrando la voz mozambiqueña.',
@@ -79,8 +81,8 @@ const i18n = (() => {
             sobre_kicker:'Sobre la Plataforma',sobre_h1a:'Análisis crítico,',sobre_h1b:'desde adentro',sobre_h1c:'de Mozambique.',
             sobre_p:'Makhalelo es un espacio digital independiente dedicado a publicar artículos de opinión, análisis y reflexiones.',
             sobre_btn:'Publicar en Makhalelo',
-            dd_perfil:'Mi Perfil', dd_publicar:'Publicar Artículo',
-            nav_painel:'Panel Admin', nav_sair:'Cerrar Sesión',
+            dd_perfil:'Mi Perfil',dd_publicar:'Publicar Artículo',
+            nav_painel:'Panel Admin',nav_sair:'Cerrar Sesión',
         },
         fr: {
             nav_sobre:'À Propos',nav_entrar:'Se Connecter',
@@ -103,11 +105,11 @@ const i18n = (() => {
             reg_foto:'Appuyez pour ajouter une photo',
             visual_h1:'Faites partie de la conversation.',
             visual_p:"\"La culture est l'arme la plus puissante pour libérer l'esprit.\"",
-            sobre_kicker:'Sur la Plateforme',sobre_h1a:"Analyse critique,",sobre_h1b:"de l'intérieur",sobre_h1c:'du Mozambique.',
+            sobre_kicker:'Sur la Plateforme',sobre_h1a:'Analyse critique,',sobre_h1b:"de l'intérieur",sobre_h1c:'du Mozambique.',
             sobre_p:"Makhalelo est un espace numérique indépendant dédié à la publication d'articles d'opinion, d'analyses et de réflexions.",
             sobre_btn:'Publier sur Makhalelo',
-            dd_perfil:'Mon Profil', dd_publicar:"Publier un Article",
-            nav_painel:"Panneau Admin", nav_sair:'Se Déconnecter',
+            dd_perfil:'Mon Profil',dd_publicar:'Publier un Article',
+            nav_painel:'Panneau Admin',nav_sair:'Se Déconnecter',
         }
     };
 
@@ -118,7 +120,9 @@ const i18n = (() => {
         lang = l;
         localStorage.setItem('mk_lang', l);
         apply();
-        document.querySelectorAll('.lang-btn').forEach(b => b.classList.toggle('active', b.dataset.lang === l));
+        document.querySelectorAll('.lang-btn, .lang-b').forEach(b =>
+            b.classList.toggle('active', b.dataset.lang === l)
+        );
     }
 
     function apply() {
@@ -140,7 +144,7 @@ const i18n = (() => {
 
     function init() {
         apply();
-        document.querySelectorAll('.lang-btn').forEach(b => {
+        document.querySelectorAll('.lang-btn, .lang-b').forEach(b => {
             b.addEventListener('click', () => setLang(b.dataset.lang));
             b.classList.toggle('active', b.dataset.lang === lang);
         });
